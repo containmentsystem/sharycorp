@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sharyfairy — Swimdom XP</title>
+<meta name="description" content="A cyborgian entity obsessed with the nature of being. Sharyfairy is an experimental artist and butoh practitioner from Singapore.">
+<meta name="theme-color" content="#0f001e">
+<meta property="og:title" content="Sharyfairy — shary.fyi">
+<meta property="og:description" content="A cyborgian entity obsessed with the nature of being.">
+<meta property="og:image" content="img/avatar-600.webp">
+<meta property="og:type" content="website">
+<link rel="icon" href="svg/icon-my-bio.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/SpaceMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/Astloch-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* fonts shipped in 3. SHARY.fyi/Assets/Fonts */
+@font-face{font-family:"Astloch";src:url(fonts/Astloch-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Astloch";src:url(fonts/Astloch-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Space Mono";src:url(fonts/SpaceMono-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Space Mono";src:url(fonts/SpaceMono-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"HN Cond";src:url(fonts/HelveticaNeue-MedCond.woff2) format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"VG Aldiviva Estate";src:url(fonts/VGAldiviva-Estate.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"VG Aldiviva Primavera";src:url(fonts/VGAldiviva-Primavera.woff2) format("woff2");font-display:swap}
+/* colours sampled from SHARYFYI Layout.pdf */
+:root{
+  --boot:#0f001e; --boot-bar:#bd48ae;
+  --lab:#7700ea;            /* icon-label offset shadow */
+  --purple:#a137c4;         /* "Sharyfairy" on the start bar */
+  --note:#fbffab;
+  --w-edge:#302660; --w-ring1:#9c77e9; --w-ring2:#7892d6; --w-inner:#443577; --w-body:#e2defa; --w-panel-edge:#3b3156;
+  --d-body:#e1dffa; --d-title:#8e77e4; --d-ok:#857ce0; --d-cancel:#f4eefd;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace; --black:"Astloch","Astloch Bold",serif; --body:"HN Cond","Helvetica Neue",Arial,sans-serif;
+  --script:"VG Aldiviva Estate","Astloch",cursive; --script-light:"VG Aldiviva Primavera","Astloch",cursive;   /* from ARCHIVE/Fonts zip */
+  --bar-h:9.14vw; --wf:13px; --lbl:2.96vw; --u:calc(100vw / 1173);
+}
+@media (min-width:900px){:root{--bar-h:3.17vw;--wf:clamp(12px,.85vw,15px);--lbl:clamp(11px,1.04vw,16px);--u:calc(100vw / 1920)}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--boot);font-family:var(--mono);overflow:hidden;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+button{font:inherit;color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- boot screen (page 0 / page 2 of the layout) ---------- */
+#boot{position:fixed;inset:0;z-index:100;background:var(--boot);cursor:pointer;transition:opacity .7s ease}
+#boot.out{opacity:0;pointer-events:none}
+#boot .lockup{position:absolute;left:50%;top:42%;width:77vw;transform:translate(-50%,-50%);height:auto}
+/* loading bar measured from the layout: grey frame 3/37 of the height, black well, blocks 15.5 wide on a 19.9 pitch
+   (5.03% / 6.45% of the well), 69% tall, first block 2.07% in — 15 blocks fill the well */
+#boot .bar{--bh:3.6vw;position:absolute;left:50%;top:61%;width:37vw;height:var(--bh);transform:translateX(-50%);background:#010101;
+  border:calc(var(--bh)*.08) solid #898a8e;border-radius:calc(var(--bh)*.1);overflow:hidden;box-sizing:content-box}
+#boot .bar .fill{position:absolute;left:2.07%;top:16.7%;height:69%;width:96.75%;
+  background:repeating-linear-gradient(90deg,var(--boot-bar) 0 5.2%,transparent 5.2% 6.667%);
+  clip-path:inset(0 100% 0 0);animation:load var(--boot-ms,2400ms) steps(15,end) forwards}
+@keyframes load{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+#boot .copy{position:absolute;left:3.5%;bottom:1.6%;width:36vw;height:auto}
+#boot .fh{position:absolute;right:0;bottom:0;width:26vw;height:auto}
+@media (min-width:900px){
+  #boot .lockup{width:34vw;top:42%}
+  #boot .bar{width:16.4vw;--bh:1.6vw;top:76%}
+  #boot .copy{width:16.7vw;left:2.1%;bottom:1.3%}
+  #boot .fh{width:7.8vw}
+}
+@media (prefers-reduced-motion:reduce){#boot{transition:none}}
+
+/* ---------- desktop ---------- */
+.desktop{position:fixed;inset:0;overflow:hidden}
+.wall{position:absolute;inset:0;width:100%;height:calc(100% - var(--bar-h) - env(safe-area-inset-bottom,0px));object-fit:cover;object-position:center;display:block;user-select:none;-webkit-user-drag:none}
+/* avatar + sticky note travel as one group: positioned once, note pinned to the avatar's bottom edge */
+.stack{position:absolute;left:41.7%;top:45.9%;width:51.5%;z-index:2;display:flex;flex-direction:column}
+.avatar{display:block;width:100%;pointer-events:none;user-select:none;position:relative;z-index:1}
+.avatar img{display:block;width:100%;height:auto;filter:drop-shadow(0 .6vw 1.2vw rgba(0,0,40,.35))}
+.note{position:relative;z-index:2;margin-left:2.1%;width:94.4%;aspect-ratio:570/554;height:auto;background:var(--note);color:#000;padding:calc(33*var(--u)) calc(44*var(--u)) calc(40*var(--u));
+  font-family:var(--script);font-size:calc(43.6*var(--u));line-height:1.2;box-shadow:0 .4vw 1.6vw rgba(0,0,40,.3)}
+.note p{margin:0}
+.note .hd{font-family:var(--script-light)}
+/* icons */
+.ico{position:absolute;left:var(--x);top:var(--y);transform:translateX(-50%);width:min(20vw,11.5svh);border:0;background:none;padding:0;margin:0;cursor:pointer;text-align:center;text-decoration:none;z-index:2;-webkit-tap-highlight-color:transparent}
+.ico img{width:100%;height:auto;display:block;filter:drop-shadow(0 .3vw .5vw rgba(0,0,60,.25));transition:transform .2s ease}
+.ico .lbl{display:block;margin:-9% -45% 0;font-family:var(--mono);font-size:var(--lbl);line-height:1.15;color:#fff;text-shadow:.08em .15em 0 var(--lab);white-space:pre-line}
+.ico:hover img,.ico:focus-visible img{transform:translateY(-3%) scale(1.04)}
+.ico:focus-visible{outline:2px dashed #fff;outline-offset:2px}
+.ico[data-i=bio]{--x:23.1%;--y:5.5%}.ico[data-i=output]{--x:51%;--y:5.5%}.ico[data-i=system]{--x:77.3%;--y:5.5%}
+.ico[data-i=msn]{--x:23.1%;--y:17.8%}.ico[data-i=mail]{--x:51%;--y:17.8%}.ico[data-i=explorer]{--x:77.3%;--y:17.8%}
+.ico[data-i=cv]{--x:51%;--y:30%}.ico[data-i=portfolio]{--x:77.3%;--y:30%}
+@media (min-width:900px){
+  .ico{width:min(5.6vw,10svh)}
+  .ico[data-i=bio]{--x:6.5%;--y:4.5%}.ico[data-i=output]{--x:16%;--y:4.5%}
+  .ico[data-i=system]{--x:6.5%;--y:21.5%}.ico[data-i=msn]{--x:16%;--y:21.5%}
+  .ico[data-i=mail]{--x:6.5%;--y:38%}.ico[data-i=explorer]{--x:16%;--y:38%}
+  .ico[data-i=cv]{--x:6.5%;--y:54.5%}.ico[data-i=portfolio]{--x:16%;--y:54.5%}   /* 4th row of the icon grid (moved from bottom-right on request) */
+  .stack{left:77.1%;top:.4%;width:20.4%}
+  .avatar{width:94%;margin-left:1%}
+  .note{margin-left:0;width:100%;aspect-ratio:392/381;font-size:calc(30*var(--u));padding:calc(23*var(--u)) calc(30*var(--u)) calc(30*var(--u))}
+}
+
+/* ---------- windows (chrome measured from the My Bio window) ---------- */
+.win{position:absolute;z-index:10;display:none;flex-direction:column;font-size:var(--wf);background:linear-gradient(90deg,var(--w-ring1),var(--w-ring2));
+  border:1px solid var(--w-edge);border-radius:.4em;padding:.55em .6em .6em;box-shadow:0 .8em 2.4em rgba(20,10,60,.4);max-width:100%;touch-action:none}
+.win.on{display:flex}
+.win.top{z-index:20}
+.tb{display:flex;align-items:center;height:1.9em;padding:0 .1em 0 .55em;font-family:var(--mono);font-size:1.15em;color:#fff;cursor:move;user-select:none;-webkit-user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb .ctl{margin-left:auto;display:flex;gap:.25em;cursor:default}
+.tb .ctl button{width:1.35em;height:1.35em;padding:0;border:1px solid var(--w-edge);border-radius:.15em;background:#d9ccf7;color:var(--w-edge);font:700 .78em/1 var(--mono);display:grid;place-items:center;cursor:pointer;-webkit-appearance:none;appearance:none}
+.tb .ctl button:hover{background:#fff}
+.body{border:2px solid var(--w-inner);background:var(--w-body);padding:1.5em .45em .45em;display:flex;min-height:0;flex:1}
+.panel{flex:1;min-width:0;min-height:0;border:1.5px solid var(--w-panel-edge);background:rgba(40,32,70,.74);color:#fdfdfd;padding:1em 1.2em;overflow:auto;overscroll-behavior:contain;
+  font-family:var(--black);font-size:1.5em;line-height:1.2;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.panel p{margin:0 0 .9em}
+.panel h2,.panel h3{font-family:var(--black);font-weight:700;margin:0 0 .2em;font-size:1.15em;line-height:1.15}
+.panel h3{font-size:1em;margin-top:.6em}
+.panel .bt{font-family:var(--body);font-size:.85em;line-height:1.25}
+.panel ul{margin:0 0 .9em;padding-left:1.2em}
+.panel a{color:#fff}
+.panel .lbl{font-family:var(--mono);font-size:.62em;letter-spacing:.02em;text-transform:uppercase;opacity:.9}
+/* mobile: one window at a time, above the start bar */
+.win{left:3%;right:3%;top:3.5%;max-height:calc(100% - var(--bar-h) - 6%)}
+@media (min-width:900px){
+  .win{right:auto;max-height:calc(100% - var(--bar-h) - 8%);min-width:22em}   /* leaves room for the window's own top offset */
+  .win.max{left:1%!important;top:1%!important;width:98%!important;height:calc(100% - var(--bar-h) - 2%)}
+  #w-bio{left:24.6%;top:4.4%;width:47.1%}
+  #w-output{left:20%;top:11%;width:56%;height:68%}
+  #w-system{left:27%;top:9%;width:44%;height:78%}
+  #w-msn{left:36%;top:6%;width:26%}
+  #w-explorer{left:39%;top:22%;width:22%}
+}
+/* output */
+.out{display:grid;grid-template-columns:8.5em 1fr;gap:.6em;padding:.45em}
+.out .intro{grid-column:1/-1;margin:.2em .2em .1em}
+.works{list-style:none;margin:0;padding:.35em;background:#fff;border:1px solid var(--w-panel-edge);display:flex;flex-direction:column;gap:.3em;align-self:start}
+.works button{display:block;width:100%;text-align:left;padding:.35em .45em;border:1px solid var(--w-panel-edge);border-radius:.2em;background:#f3effc;color:var(--w-edge);font:.55em/1.2 var(--mono);cursor:pointer;text-shadow:none}
+.works button::before{content:"";display:inline-block;width:1.1em;height:.75em;background:var(--w-edge);border-radius:.15em .15em 0 0;margin-right:.45em;vertical-align:-.05em}
+.works button[aria-current]{background:var(--w-ring1);color:#fff}
+.works button:hover{background:#ddd2fa}
+.detail{min-width:0}
+.detail .media{border:1px dashed rgba(255,255,255,.7);border-radius:.3em;min-height:6em;display:grid;place-items:center;font:.55em/1.3 var(--mono);opacity:.85;margin-top:.6em;padding:.8em;text-align:center}
+@media (max-width:899px){.out{grid-template-columns:1fr}.works{flex-direction:row;flex-wrap:wrap}.works button{width:auto}}
+/* messenger (bootleg MSN) */
+.msn{font-family:var(--body);color:var(--w-edge);background:rgba(255,255,255,.86);font-size:1.1em;-webkit-backdrop-filter:none;backdrop-filter:none}
+.msn .pic{display:block;width:6.2em;height:6.2em;margin:.2em auto .8em;border:2px solid var(--w-edge);border-radius:.3em;background:#fff;padding:.2em;object-fit:cover}
+.msn .hi{margin:0 0 .6em;text-align:center;font-size:.85em;line-height:1.3}
+.msn label{display:block;font-size:.8em;margin:.5em 0 .15em}
+.msn input:not([type=checkbox]),.msn textarea{width:100%;font:.85em/1.3 var(--mono);padding:.4em .5em;border:1px solid var(--w-edge);border-radius:.15em;background:#fff;color:#000;box-shadow:inset .1em .1em 0 rgba(48,38,96,.25)}
+.msn textarea{min-height:6em;resize:vertical}
+.msn .status{display:flex;align-items:center;gap:.4em;margin:.8em 0 .3em;font-size:.85em}
+.msn .status i{width:.7em;height:.7em;border-radius:50%;background:#3ed15a;box-shadow:0 0 0 1px #1c7a30}
+.msn .chk{display:flex;align-items:center;gap:.4em;font-size:.85em;margin:.3em 0 .9em}
+.msn .btn{display:inline-block;min-width:7em;padding:.4em 1.2em;border:1px solid var(--w-edge);border-radius:.25em;background:var(--d-ok);color:#fff;font:.85em/1.3 var(--mono);cursor:pointer;box-shadow:0 .15em 0 var(--w-edge)}
+.msn .btn:hover{background:var(--w-ring1)}.msn .btn:active{transform:translateY(.1em);box-shadow:0 .05em 0 var(--w-edge)}
+.msn .foot{font-size:.75em;margin:1em 0 0;text-align:center}
+.msn .foot a{color:var(--w-edge)}
+.msn .st{font-size:.8em;min-height:1.2em;margin:.5em 0 0;text-align:center}
+/* explorer */
+.exp{font-family:var(--mono);font-size:1.05em;color:#fff}
+.exp ul{list-style:none;padding:0;margin:.2em 0 0}
+.exp li{margin:.35em 0}
+.exp a{color:#fff;text-decoration:none}.exp a:hover{text-decoration:underline}
+.exp .k{opacity:.8}
+
+/* ---------- dialog (CV / Portfolio download warning) ---------- */
+dialog.dlg{border:1px solid var(--w-edge);border-radius:.4em;padding:0;background:var(--d-body);color:var(--w-edge);font-size:var(--wf);width:min(92vw,30em);box-shadow:0 1em 3em rgba(20,10,60,.5);font-family:var(--mono)}
+dialog.dlg::backdrop{background:rgba(15,0,30,.45)}
+.dlg .tb{background:linear-gradient(90deg,var(--d-title),var(--w-ring2));cursor:default;padding-left:.7em;border-radius:.3em .3em 0 0}
+.dlg .dbody{display:grid;grid-template-columns:4.5em 1fr;gap:1em;align-items:center;padding:1.6em 1.4em 1.2em}
+.dlg .dbody img{width:100%;height:auto}
+.dlg .dbody p{margin:0;font-size:1.05em;line-height:1.35}
+.dlg .acts{display:flex;justify-content:center;gap:1.2em;padding:0 1.4em 1.4em}
+.dlg .acts a,.dlg .acts button{min-width:7.5em;text-align:center;padding:.45em 1em;border:1px solid var(--w-edge);border-radius:.25em;font:1em var(--mono);text-decoration:none;cursor:pointer;box-shadow:0 .15em 0 var(--w-edge)}
+.dlg .acts a{background:var(--d-ok);color:#fff}
+.dlg .acts a[aria-disabled=true]{opacity:.55;box-shadow:none;cursor:default}.dlg .acts button{background:var(--d-cancel);color:var(--w-edge)}
+.dlg .acts a:hover{background:var(--w-ring1)}.dlg .acts button:hover{background:#fff}
+
+/* ---------- start bar ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;height:calc(var(--bar-h) + env(safe-area-inset-bottom,0px));z-index:30;background:#a137c4}
+.bar img{position:absolute;left:0;top:0;width:100%;height:var(--bar-h);display:block;object-fit:fill;user-select:none;-webkit-user-drag:none}
+/* start button = the cyan box in the bar art; the label is sized from the width of its own slot
+   (Astloch Bold "Sharyfairy" ≈ 4.0 × font-size wide) so it always fits, whatever the viewport */
+.start{position:absolute;left:0;top:0;height:var(--bar-h);width:37.5%;border:0;background:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;color:var(--purple)}
+.start .slot{position:absolute;left:28.8%;top:0;width:64%;height:100%;display:flex;align-items:center;container-type:inline-size}
+.start .st{font-family:var(--black);font-weight:700;font-size:min(23cqw,calc(.62*var(--bar-h)));line-height:1;white-space:nowrap}
+.start:hover,.start[aria-expanded=true]{filter:brightness(1.15)}
+.clock{position:absolute;right:2.1%;top:0;height:var(--bar-h);display:flex;align-items:center;font-family:var(--mono);font-size:calc(36.1*var(--u));color:#fff;text-shadow:.03em .06em 0 var(--lab);pointer-events:none}
+@media (min-width:900px){
+  .start{width:12.9%}
+  .start .slot{left:27.5%;width:66%}
+  .clock{right:1%;font-size:calc(20*var(--u))}
+}
+
+.menu{position:fixed;left:1.5%;bottom:calc(var(--bar-h) + env(safe-area-inset-bottom,0px) + .4vw);z-index:31;display:none;flex-direction:column;min-width:13em;font-size:var(--wf);
+  background:linear-gradient(90deg,var(--w-ring1),var(--w-ring2));border:1px solid var(--w-edge);border-radius:.4em;padding:.5em;box-shadow:0 .8em 2.4em rgba(20,10,60,.45)}
+.menu.on{display:flex}
+.menu .mh{font-family:var(--black);font-weight:700;color:#fff;font-size:1.5em;padding:.1em .4em .3em}
+.menu ul{list-style:none;margin:0;padding:.3em;background:var(--w-body);border:2px solid var(--w-inner)}
+.menu li a,.menu li button{display:block;width:100%;text-align:left;padding:.45em .6em;border:0;background:none;color:var(--w-edge);font:1em var(--mono);text-decoration:none;cursor:pointer;border-radius:.2em}
+.menu li a:hover,.menu li button:hover{background:var(--w-ring1);color:#fff}
+.menu li.sep{border-top:1px solid var(--w-inner);margin:.3em 0}
+#snow{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:45}
+@media (prefers-reduced-motion:reduce){#snow{display:none}}
+</style>
+</head>
+<body>
+
+<!-- boot -->
+<div id="boot" role="img" aria-label="Fairyhard Swimdom XP, x69 edition — loading">
+  <img class="lockup" src="svg/swimdom-xp-lockup.svg" alt="" width="658" height="470" fetchpriority="high">
+  <div class="bar" role="progressbar" aria-label="Loading" aria-valuemin="0" aria-valuemax="100"><i class="fill"></i></div>
+  <img class="copy" src="svg/copyright-sscorp.svg" alt="Copyright © SSCORP" width="446" height="59">
+  <img class="fh" src="svg/fairyhard.svg" alt="Fairyhard®" width="295" height="77">
+</div>
+
+<div class="desktop" id="desktop">
+  <picture>
+    <source media="(min-width:900px)" srcset="img/bg-desktop-1400.webp 1400w, img/bg-desktop-2200.webp 2200w" type="image/webp">
+    <source media="(min-width:900px)" srcset="img/bg-desktop-1400.jpg 1400w, img/bg-desktop-2200.jpg 2200w">
+    <source srcset="img/bg-mobile.webp" type="image/webp">
+    <img class="wall" src="img/bg-mobile.jpg" alt="" width="900" height="1961" fetchpriority="high">
+  </picture>
+
+  <h1 class="sr">Sharyfairy — Swimdom XP desktop</h1>
+
+  <!-- desktop icons -->
+  <button class="ico" data-i="bio" data-win="bio" type="button"><img src="svg/icon-my-bio.svg" alt="" width="250" height="275"><span class="lbl">My Bio</span></button>
+  <button class="ico" data-i="output" data-win="output" type="button"><img src="svg/icon-output.svg" alt="" width="250" height="275"><span class="lbl">Output</span></button>
+  <button class="ico" data-i="system" data-win="system" type="button"><img src="svg/icon-system.svg" alt="" width="250" height="275"><span class="lbl">System</span></button>
+  <button class="ico" data-i="msn" data-win="msn" type="button"><img src="svg/icon-swm-messenger.svg" alt="" width="250" height="275"><span class="lbl">SWM
+Messenger</span></button>
+  <a class="ico" data-i="mail" href="mailto:fairy@shary.fyi"><img src="svg/icon-mail.svg" alt="" width="250" height="275"><span class="lbl">Mail</span></a>
+  <button class="ico" data-i="explorer" data-win="explorer" type="button"><img src="svg/icon-swimnet-explorer.svg" alt="" width="250" height="275"><span class="lbl">Swimnet
+Explorer</span></button>
+  <button class="ico" data-i="cv" data-dl="cv" type="button"><img src="svg/icon-artist-cv.svg" alt="" width="250" height="275"><span class="lbl">Artist CV</span></button>
+  <button class="ico" data-i="portfolio" data-dl="portfolio" type="button"><img src="svg/icon-portfolio.svg" alt="" width="250" height="275"><span class="lbl">Portfolio</span></button>
+
+  <div class="stack">
+  <picture class="avatar">
+    <source srcset="img/avatar-600.webp 600w, img/avatar-1100.webp 1100w" sizes="(min-width:900px) 20vw, 52vw" type="image/webp">
+    <img src="img/avatar-600.webp" alt="Sharyfairy, 3D avatar" width="600" height="547">
+  </picture>
+  <aside class="note" aria-label="Announcements">
+    <p class="hd">Announcements</p>
+    <p class="hd">Upcoming tour dates</p>
+    <p class="hd">Date 6/29/2026</p>
+    <p class="hd">9 Sept 2026</p>
+    <p>Announcements</p>
+    <p>Upcoming tour dates</p>
+    <p>Singapore 2027–2028</p>
+    <p>Japan 6/29 September</p>
+    <p>Los Angeles 333</p>
+  </aside>
+  </div>
+
+  <!-- My Bio -->
+  <section class="win" id="w-bio" role="dialog" aria-labelledby="t-bio">
+    <div class="tb"><span id="t-bio">My Bio</span><span class="ctl"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Maximise">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body"><div class="panel">
+      <p>A cyborgian entity obsessed with the nature of being, <strong>Sharyfairy</strong> is an experimental artist and butoh practitioner from Singapore. Their transdisciplinary practice is centred on exploration of the human body as immaculate technology. With energy as their medium and mystic frameworks as their guide, they seek to define a futurist esoteric that tends to the divine.</p>
+    </div></div>
+  </section>
+
+  <!-- Output -->
+  <section class="win" id="w-output" role="dialog" aria-labelledby="t-output">
+    <div class="tb"><span id="t-output">Output</span><span class="ctl"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Maximise">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body"><div class="panel out">
+      <p class="bt intro">Lots of long-term slow-burn soon-to-come in progress, here are some quick picks from recent past</p>
+      <ul class="works" id="works" aria-label="Selected works"></ul>
+      <div class="detail" id="detail"></div>
+    </div></div>
+  </section>
+
+  <!-- System -->
+  <section class="win" id="w-system" role="dialog" aria-labelledby="t-system">
+    <div class="tb"><span id="t-system">System</span><span class="ctl"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Maximise">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body"><div class="panel">
+      <h2>Ars longa, vita brevis</h2>
+      <p class="bt">The structural grid that supports a multi-dimensional practice aka Sharyfairy’s current interests.</p>
+      <h3>Spirit of the Machine</h3>
+      <p class="bt">Developing a butoh as cybernetics framework to study and optimize the body. Deconstructing perceived distinctions between nature and synthetic forms. Sharyfairy loves her meat suit.</p>
+      <h3>Access Visions of Deveined Femininity</h3>
+      <p class="bt">Stripping personal identity from guts like genbu 玄武 xuanwu (mythical tortoise-snake creature formed of a monk’s carved out internals). Sharyfairy wonders about the primordial everywoman.</p>
+      <h3>Weaving Cosmic Web Ɛ”3</h3>
+      <p class="bt">Caught in the net of Indra, world building from brain rot fungal networks to the limit of sky. Sharyfairy engineers hidden complexity across all output, only observed in totality from a higher dimension.</p>
+      <h3>The Age of Alightenment</h3>
+      <p class="bt">Coming into true nature beyond light and darkness. Enlightenment is so passé. Sharyfairy seeks gnosis, new forms and modes of being.</p>
+      <ul class="bt"><li>Movement performance</li><li>Multimedia installation</li><li>Audiovisual experiences</li><li>Digital explorations</li><li>Illustration</li><li>Writing</li></ul>
+    </div></div>
+  </section>
+
+  <!-- SWM Messenger (bootleg MSN as contact form) -->
+  <section class="win" id="w-msn" role="dialog" aria-labelledby="t-msn">
+    <div class="tb"><span id="t-msn">SWM Messenger</span><span class="ctl"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Maximise">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body"><form class="panel msn" id="msn" novalidate>
+      <img class="pic" src="img/avatar-head.webp" alt="Sharyfairy" width="240" height="240">
+      <p class="hi">Wanna feel your touch, you know it’s easier if we get closer.<br>Open to commissions, collaborations or curious</p>
+      <label for="m-name">Name</label><input id="m-name" name="name" type="text" autocomplete="name" required>
+      <label for="m-email">Email</label><input id="m-email" name="email" type="email" autocomplete="email" required>
+      <label for="m-msg">Message</label><textarea id="m-msg" name="message" required></textarea>
+      <p class="status">Status: <i aria-hidden="true"></i> Online</p>
+      <label class="chk"><input type="checkbox" name="remember" checked> Remember Sharyfairy</label>
+      <div style="text-align:center"><button class="btn" type="submit">Send</button></div>
+      <p class="st" id="m-st" role="status" aria-live="polite"></p>
+      <p class="foot">Forgot what you wanted to say?<br>Email later: <a href="mailto:fairy@shary.fyi">fairy@shary.fyi</a></p>
+    </form></div>
+  </section>
+
+  <!-- Swimnet Explorer -->
+  <section class="win" id="w-explorer" role="dialog" aria-labelledby="t-explorer">
+    <div class="tb"><span id="t-explorer">Swimnet Explorer</span><span class="ctl"><button type="button" data-act="min" aria-label="Minimise">_</button><button type="button" data-act="max" aria-label="Maximise">□</button><button type="button" data-act="close" aria-label="Close">×</button></span></div>
+    <div class="body"><div class="panel exp">
+      <p>Visit these links!!!</p>
+      <ul>
+        <li><span class="k">My Instagram</span> <a href="https://instagram.com/sharyfairy" target="_blank" rel="noopener">@sharyfairy</a></li>
+        <li><span class="k">My Human</span> <a href="https://sscorp.io" data-local="../sscorp.io/">SSCORP.IO</a></li>
+        <li><span class="k">My Business</span> <a href="https://swiim.ing" data-local="../swiim.ing/">SWIIM.ING</a></li>
+      </ul>
+    </div></div>
+  </section>
+
+  <!-- start bar -->
+  <nav class="bar" aria-label="Start bar">
+    <picture>
+      <source media="(min-width:900px)" srcset="svg/startbar-desktop.svg">
+      <img src="svg/startbar-mobile.svg" alt="" width="1165" height="107">
+    </picture>
+    <button class="start" id="start" type="button" aria-expanded="false" aria-controls="menu"><span class="slot"><span class="st">Sharyfairy</span></span></button>
+    <div class="clock" id="clock" aria-live="off">6:09</div>
+  </nav>
+  <div class="menu" id="menu" hidden>
+    <div class="mh">Sharyfairy</div>
+    <ul>
+      <li><button type="button" data-open="bio">My Bio</button></li>
+      <li><button type="button" data-open="output">Output</button></li>
+      <li><button type="button" data-open="system">System</button></li>
+      <li><button type="button" data-open="msn">SWM Messenger</button></li>
+      <li><a href="mailto:fairy@shary.fyi">Mail</a></li>
+      <li><button type="button" data-open="explorer">Swimnet Explorer</button></li>
+      <li class="sep"></li>
+      <li><button type="button" data-dl="cv">Artist CV</button></li>
+      <li><button type="button" data-dl="portfolio">Portfolio</button></li>
+      <li class="sep"></li>
+      <li><button type="button" id="reboot">Restart Swimdom XP</button></li>
+    </ul>
+  </div>
+</div>
+
+<canvas id="snow" aria-hidden="true"></canvas>
+
+<dialog class="dlg" id="dlg" aria-labelledby="dlg-t">
+  <div class="tb"><span id="dlg-t" class="sr">Security warning</span><span class="ctl"><button type="button" data-act="cancel" aria-label="Close">×</button></span></div>
+  <div class="dbody"><img src="svg/icon-security.svg" alt="" width="250" height="275"><p id="dlg-msg">Warning: Sharyfairy’s Artist CV PDF</p></div>
+  <div class="acts"><a id="dlg-dl" href="#" target="_blank" rel="noopener">Download</a><button type="button" data-act="cancel">Cancel</button></div>
+</dialog>
+
+<script>
+(() => {
+  // ---- editable content ------------------------------------------------------
+  // Selected works shown in the Output window (max ~6). Add `media` as an <img>/<video> src later.
+  const WORKS = [
+    { title: 'Strings',           desc: 'Short description' },
+    { title: 'Silver',            desc: 'Short description' },
+    { title: 'Orchard Rot',       desc: 'Short description' },
+    { title: 'Labour Day',        desc: 'Short description' },
+    { title: 'Centre for humane', desc: 'Short description' },
+    { title: 'dAImon',            desc: 'Short description' },
+  ];
+  // Downloads triggered by the Artist CV / Portfolio icons (PDFs go in shary.fyi/files/).
+  const DOWNLOADS = {
+    cv:        { label: 'Artist CV', file: 'files/Sharyfairy-Artist-CV.pdf' },
+    portfolio: { label: 'Portfolio', file: 'files/Sharyfairy-Portfolio.pdf' },
+  };
+  // Contact delivery: set FORM_ENDPOINT to a JSON form backend; empty = open the mail app.
+  const FORM_ENDPOINT = '';
+  const CONTACT_EMAIL = 'fairy@shary.fyi';
+
+  const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+  const isDesktop = () => matchMedia('(min-width:900px)').matches;
+
+  let z = 20;   // window z-order counter (declared before boot, which may open a window)
+
+  // ---- start bar ----------------------------------------------------------------
+  const menu = $('#menu'), start = $('#start');
+  function closeMenu() { menu.classList.remove('on'); menu.hidden = true; start.setAttribute('aria-expanded', 'false'); }
+  start.addEventListener('click', () => { const on = !menu.classList.contains('on'); menu.hidden = !on; menu.classList.toggle('on', on); start.setAttribute('aria-expanded', on); });
+  document.addEventListener('pointerdown', e => { if (!e.target.closest('#menu,#start')) closeMenu(); });
+  $('#reboot').addEventListener('click', () => { try { sessionStorage.removeItem('shary-boot'); } catch (e) {} location.reload(); });
+  const clock = $('#clock');
+  function tick() { const d = new Date(); clock.textContent = ((d.getHours() + 11) % 12 + 1) + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  tick(); setInterval(tick, 15000);
+
+  // ---- boot ---------------------------------------------------------------------
+  const boot = $('#boot');
+  const endBoot = () => { boot.classList.add('out'); setTimeout(() => boot.remove(), 800); if (isDesktop()) open('bio'); };
+  let booted = false;
+  try { booted = !!sessionStorage.getItem('shary-boot'); sessionStorage.setItem('shary-boot', '1'); } catch (e) {}
+  const BOOT_MS = 2600; boot.style.setProperty('--boot-ms', (BOOT_MS - 200) + 'ms');
+  if (booted) { boot.remove(); if (isDesktop()) open('bio'); } else { setTimeout(endBoot, BOOT_MS); boot.addEventListener('click', endBoot); }
+
+  // ---- windows ------------------------------------------------------------------
+  function open(id) {
+    const w = $('#w-' + id); if (!w) return;
+    if (!isDesktop()) $$('.win.on').forEach(x => { if (x !== w) x.classList.remove('on'); });
+    w.classList.add('on'); front(w); closeMenu();
+    const f = w.querySelector('.tb'); if (f) f.setAttribute('tabindex', '-1'), f.focus({ preventScroll: true });
+  }
+  function front(w) { $$('.win').forEach(x => x.classList.remove('top')); w.classList.add('top'); w.style.zIndex = ++z; }
+  function close(w) { w.classList.remove('on', 'max'); }
+  $$('.win').forEach(w => {
+    w.addEventListener('pointerdown', () => front(w));
+    w.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation(); const a = b.dataset.act;
+      if (a === 'close' || a === 'min') close(w); else if (a === 'max') w.classList.toggle('max');
+    }));
+    // drag by title bar (desktop only)
+    const tb = w.querySelector('.tb'); let drag = null;
+    tb.addEventListener('pointerdown', e => {
+      if (!isDesktop() || e.target.closest('button') || w.classList.contains('max')) return;
+      const r = w.getBoundingClientRect(); drag = { dx: e.clientX - r.left, dy: e.clientY - r.top }; tb.setPointerCapture(e.pointerId);
+    });
+    tb.addEventListener('pointermove', e => {
+      if (!drag) return; const pw = innerWidth, ph = innerHeight;
+      const x = Math.min(Math.max(e.clientX - drag.dx, -w.offsetWidth * .6), pw - 60);
+      const y = Math.min(Math.max(e.clientY - drag.dy, 0), ph - 80);
+      w.style.left = x + 'px'; w.style.top = y + 'px'; w.style.right = 'auto';
+    });
+    tb.addEventListener('pointerup', () => drag = null); tb.addEventListener('pointercancel', () => drag = null);
+  });
+  document.addEventListener('click', e => {
+    const o = e.target.closest('[data-open]'); if (o) { e.preventDefault(); open(o.dataset.open); return; }
+    const w = e.target.closest('[data-win]'); if (w) { open(w.dataset.win); return; }
+    const d = e.target.closest('[data-dl]'); if (d) { e.preventDefault(); askDownload(d.dataset.dl); }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (menu.classList.contains('on')) return closeMenu();
+    const tops = $$('.win.on').sort((a, b) => (+b.style.zIndex || 0) - (+a.style.zIndex || 0)); if (tops[0]) close(tops[0]);
+  });
+
+  // ---- output window ------------------------------------------------------------
+  const works = $('#works'), detail = $('#detail');
+  WORKS.forEach((wk, i) => {
+    const li = document.createElement('li'), b = document.createElement('button'); b.type = 'button'; b.textContent = wk.title;
+    b.addEventListener('click', () => showWork(i)); li.appendChild(b); works.appendChild(li);
+  });
+  function showWork(i) {
+    const wk = WORKS[i];
+    works.querySelectorAll('button').forEach((b, j) => j === i ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current'));
+    detail.innerHTML = `<h2>${esc(wk.title)}</h2><p class="bt">${esc(wk.desc)}</p>` +
+      (wk.media ? `<img src="${wk.media}" alt="${esc(wk.title)}" style="max-width:100%;display:block;margin-top:.5em">` : `<div class="media">Photos / video</div>`);
+  }
+  const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  showWork(0);
+
+  // ---- download dialog ----------------------------------------------------------
+  const dlg = $('#dlg');
+  async function askDownload(k) {
+    const d = DOWNLOADS[k]; if (!d) return;
+    const a = $('#dlg-dl');
+    $('#dlg-msg').textContent = `Warning: Sharyfairy’s ${d.label} PDF`; a.href = d.file; a.setAttribute('download', ''); a.textContent = 'Download'; a.removeAttribute('aria-disabled'); a.style.pointerEvents = '';
+    closeMenu(); dlg.showModal();
+    // if the PDF isn't on the server yet, say so instead of opening a 404
+    try { const r = await fetch(d.file, { method: 'HEAD' }); if (!r.ok) throw 0; }
+    catch (e) { a.textContent = 'Not available yet'; a.setAttribute('aria-disabled', 'true'); a.style.pointerEvents = 'none'; a.removeAttribute('href'); }
+  }
+  dlg.querySelectorAll('[data-act=cancel]').forEach(b => b.addEventListener('click', () => dlg.close()));
+  $('#dlg-dl').addEventListener('click', () => setTimeout(() => dlg.close(), 200));
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+
+  // ---- messenger form -----------------------------------------------------------
+  const form = $('#msn'), st = $('#m-st');
+  form.addEventListener('submit', async e => {
+    e.preventDefault(); if (!form.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (FORM_ENDPOINT) {
+      st.textContent = 'Sending…';
+      try { const r = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) throw 0; st.textContent = 'Sent. Sharyfairy will be in touch.'; form.reset(); }
+      catch (err) { st.textContent = 'Could not send — email ' + CONTACT_EMAIL; }
+    } else {
+      st.textContent = 'Opening your mail app…';
+      location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent('SWM Messenger — ' + data.name) + '&body=' + encodeURIComponent(data.message + '\n\n— ' + data.name + ' <' + data.email + '>');
+    }
+  });
+
+
+
+  // ---- cursor snow trail -----------------------------------------------------------
+  (() => {
+    const cv = $('#snow'); if (!cv || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    const cx = cv.getContext('2d'); let W = 0, H = 0, dpr = 1, flakes = [], raf = 0, last = 0;
+    const fit = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    fit(); addEventListener('resize', fit);
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    function spawn(x, y, n) {
+      for (let i = 0; i < n && flakes.length < 220; i++) flakes.push({
+        x: x + rnd(-6, 6), y: y + rnd(-6, 6), r: rnd(1, 3.2), vx: rnd(-.35, .35), vy: rnd(.25, .9),
+        life: 1, decay: rnd(.008, .016), spin: rnd(0, Math.PI), arms: Math.random() < .35 });
+    }
+    function draw(t) {
+      const dt = Math.min((t - last) / 16.7, 3); last = t;
+      cx.clearRect(0, 0, W, H);
+      for (const f of flakes) {
+        f.x += (f.vx + Math.sin(t / 400 + f.spin) * .15) * dt; f.y += f.vy * dt; f.life -= f.decay * dt;
+        if (f.life <= 0) continue;
+        const a = f.life * .95;
+        if (f.arms) {                                   // tiny six-arm flake
+          cx.save(); cx.translate(f.x, f.y); cx.rotate(f.spin + t / 900); cx.strokeStyle = `rgba(255,255,255,${a})`; cx.lineWidth = .8;
+          for (let k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(-f.r * 1.8, 0); cx.lineTo(f.r * 1.8, 0); cx.stroke(); cx.rotate(Math.PI / 3); }
+          cx.restore();
+        } else {                                        // soft dot
+          const g = cx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 2.2);
+          g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(.6, `rgba(232,222,255,${a * .5})`); g.addColorStop(1, 'rgba(232,222,255,0)');
+          cx.fillStyle = g; cx.beginPath(); cx.arc(f.x, f.y, f.r * 2.2, 0, Math.PI * 2); cx.fill();
+        }
+      }
+      flakes = flakes.filter(f => f.life > 0 && f.y < H + 10);
+      raf = flakes.length ? requestAnimationFrame(draw) : 0;
+    }
+    const kick = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(draw); } };
+    let px = null, py = null;
+    addEventListener('pointermove', e => {
+      const d = px === null ? 0 : Math.hypot(e.clientX - px, e.clientY - py); px = e.clientX; py = e.clientY;
+      spawn(e.clientX, e.clientY, Math.min(4, 1 + d / 12)); kick();
+    }, { passive: true });
+    addEventListener('pointerdown', e => { spawn(e.clientX, e.clientY, 14); kick(); }, { passive: true });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { flakes = []; cx.clearRect(0, 0, W, H); } });
+  })();
+
+  if (/\/(sscorp\.io|swiim\.ing|shary\.fyi)\//.test(location.pathname) || location.protocol === 'file:')
+    $$('a[data-local]').forEach(a => a.setAttribute('href', a.dataset.local));   // co-hosted (local / GitHub Pages) → sibling folders
+
+  // deep links: #bio #output #system #msn #explorer
+  const h = location.hash.slice(1); if (h && $('#w-' + h)) open(h);
+})();
+</script>
+</body>
+</html>

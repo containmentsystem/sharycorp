@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SW!M — Strategic Works !dea Management</title>
+<meta name="description" content="SW!M Strategic Works !dea Management is a creative consultancy and event production studio. Out of Singapore, across Asia: high trust tailored solutions and incorruptible stewardship.">
+<meta name="theme-color" content="#000029">
+<meta property="og:title" content="SW!M — Strategic Works !dea Management">
+<meta property="og:description" content="Creative consultancy and event production studio. Out of Singapore, across Asia.">
+<meta property="og:type" content="website">
+<link rel="icon" href="svg/logomark-blue.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/Manrope-VF.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/SyneMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* fonts shipped with the brief: Manrope (variable), Syne Mono, Groteska */
+@font-face{font-family:"Manrope";src:url(fonts/Manrope-VF.woff2) format("woff2");font-weight:200 800;font-display:swap}
+@font-face{font-family:"Syne Mono";src:url(fonts/SyneMono-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Groteska";src:url(fonts/Groteska-Regular.woff2) format("woff2");font-weight:400;font-display:swap}
+/* colours sampled from "SWIIMING Layout – Mobile.pdf" */
+:root{
+  --paper:#fff6f6; --navy:#000029; --ink:#000000; --blue:#2a00ff; --lime:#b2ff2a; --lime-field:#b2ff2a;
+  --ring1:#0073bc; --ring2:#2c80c3; --ring3:#4f8cca; --ring4:#709cd2; --ring5:#85a9d9; --ring6:#a3bce2;
+  --col:600px;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Manrope",system-ui,sans-serif;font-weight:200;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.site{max-width:var(--col);margin:0 auto;min-height:100svh;container-type:inline-size;display:flex;flex-direction:column}
+b,strong{font-weight:600}
+a{color:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+button{font:inherit;color:inherit}
+
+/* ---------- splash (page 0 of the layout: #000029 + green logomark) ---------- */
+.splash{position:fixed;inset:0;z-index:50;background:var(--navy);display:grid;place-items:center;cursor:pointer;transition:opacity .6s ease}
+.splash img{width:min(46vw,300px);height:auto;transform:translateY(-12%)}
+.splash.out{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.splash{transition:none}}
+
+/* ---------- views ---------- */
+.view{display:none;flex:1;flex-direction:column;padding:4.7cqw 6.5cqw 0}
+.view.on{display:flex}
+main{flex:1}
+/* home */
+.intro{margin:0 0 8.9cqw;font-size:4.36cqw;line-height:1.2;max-width:94%}
+.bignav{list-style:none;margin:0;padding:0;font-family:"Syne Mono",monospace;font-size:9.46cqw;line-height:1.09}
+.bignav a{text-decoration:none;color:var(--ink)}
+.bignav a:hover,.bignav a:focus-visible{color:var(--blue)}
+/* section pages: left nav + right column, exactly as the mobile layout */
+.page{display:grid;grid-template-columns:26.4cqw 1fr;column-gap:2cqw;padding-top:4.5cqw;margin-left:-2.5cqw}
+.sidenav{list-style:none;margin:0;padding:0;font-family:"Syne Mono",monospace;font-size:4.36cqw;line-height:1.72;color:var(--navy)}
+.sidenav a{text-decoration:none;color:inherit}
+.sidenav a[aria-current="page"]{color:var(--blue)}
+.sidenav a:hover,.sidenav a:focus-visible{color:var(--blue)}
+.copy{font-size:3.58cqw;line-height:1.2;max-width:100%}
+.copy p{margin:0 0 1.2em}
+.copy h2{font-size:inherit;font-weight:600;margin:0}
+.copy h2+p{margin-top:0}
+.lead{font-size:4.36cqw;line-height:1.2}
+.lead p{margin:0 0 1.2em}
+/* footer: blue logomark bottom-left, Groteska line bottom-right (every page of the layout) */
+footer{display:flex;align-items:flex-end;justify-content:space-between;padding:6cqw 6cqw 2.8cqw 7cqw;margin-top:auto}
+footer img{width:18.2cqw;height:auto}
+footer small{font-family:"Groteska",monospace;font-size:2.95cqw;color:var(--blue);letter-spacing:.01em;white-space:nowrap;line-height:1}
+footer a{text-decoration:none;display:block}
+footer a:hover img{filter:drop-shadow(0 0 4px var(--lime))}
+/* clients */
+.logos{list-style:none;margin:2cqw 0 4cqw;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5cqw 6cqw;align-items:center}
+.logos li{display:flex;align-items:center;justify-content:center;min-height:9cqw}
+.logos img{max-width:100%;max-height:9cqw;width:auto;height:auto;object-fit:contain}
+.logos li.tall img{max-height:13cqw}
+/* floating photo wall (home) */
+.float{position:relative;width:100%;aspect-ratio:306/160;margin:2cqw 0 9cqw}
+.tile{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h)}   /* static positions — the only motion is the glitch */
+.tile .ph{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:#e9dede;overflow:hidden;cursor:zoom-in;display:block;
+  filter:saturate(.85) contrast(.95);transition:scale .35s cubic-bezier(.2,.8,.2,1),filter .35s,box-shadow .35s}
+.tile .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.tile .ph img.g{opacity:0;pointer-events:none}   /* glitch layers = slices of other photos, no colour treatment */
+/* each tile glitches into existence from nothing (staggered by --ad), then the other-photo slices start */
+.tile .ph{animation:arrive 2.2s steps(1,end) both;animation-delay:var(--ad,0s)}
+.tile .ph img.g1{animation:g1 6.5s steps(1,end) infinite;animation-delay:calc(var(--ad,0s) + 2.2s + var(--gd,0s))}
+.tile .ph img.g2{animation:g2 8.3s steps(1,end) infinite;animation-delay:calc(var(--ad,0s) + 2.2s + var(--gd,0s) + 2.9s)}
+.tile.swap .ph>img:first-child{animation:swap .5s steps(2,end)}
+.tile:hover,.tile.focus{z-index:10}
+.tile:hover .ph,.tile.focus .ph,.tile .ph:focus-visible{scale:1.32;filter:none;box-shadow:0 1.6cqw 4cqw rgba(0,0,41,.35)}
+.tile:hover img.g,.tile.focus img.g{animation:none;opacity:0}
+@keyframes g1{0%,100%{opacity:0}31%{opacity:1;clip-path:inset(18% 0 62% 0);translate:-5% 0}33%{opacity:1;clip-path:inset(64% 0 12% 0);translate:6% 0}35%{opacity:0}71%{opacity:1;clip-path:inset(4% 0 84% 0);translate:4% 0}73%{opacity:0}}
+@keyframes g2{0%,100%{opacity:0}48%{opacity:1;clip-path:inset(40% 0 30% 0);translate:5% 1%}50%{opacity:1;clip-path:inset(75% 0 5% 0);translate:-6% 0}52%{opacity:0}88%{opacity:1;clip-path:inset(30% 0 45% 0);translate:-4% 0}90%{opacity:0}}
+@keyframes arrive{0%{opacity:0}6%{opacity:1;clip-path:inset(46% 0 50% 0)}9%{opacity:0}18%{opacity:1;clip-path:inset(20% 0 70% 0);translate:-4% 0}21%{opacity:0}
+  31%{opacity:1;clip-path:inset(0 0 55% 0);translate:3% 0}34%{opacity:0}42%{opacity:1;clip-path:inset(60% 0 8% 0)}45%{opacity:1;clip-path:inset(10% 0 30% 0);translate:-2% 0}49%{opacity:0}
+  57%{opacity:1;clip-path:inset(0 0 25% 0);translate:2% 0}63%{opacity:1;clip-path:inset(35% 0 0 0)}68%{opacity:0}74%{opacity:1;clip-path:inset(0 0 12% 0);translate:-1.5% 0}80%{opacity:1;clip-path:inset(8% 0 0 0)}
+  85%{opacity:0}88%,100%{opacity:1;clip-path:none;translate:0}}
+@keyframes swap{0%{clip-path:inset(0 0 50% 0);translate:-6% 0}50%{clip-path:inset(50% 0 0 0);translate:6% 0}100%{clip-path:none;translate:0}}
+@media (prefers-reduced-motion:reduce){.tile .ph{animation:none}.tile .ph img.g{animation:none;opacity:0}}
+dialog.lb{border:0;padding:0;background:transparent;max-width:100vw;max-height:100svh;width:100vw;height:100svh;margin:0}
+dialog.lb::backdrop{background:rgba(0,0,41,.94)}
+dialog.lb img{position:absolute;inset:0;margin:auto;max-width:96vw;max-height:92svh;width:auto;height:auto;object-fit:contain;box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+dialog.lb .x{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:var(--lime);color:var(--navy);font-size:22px;line-height:1;cursor:pointer}
+dialog.lb .nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(178,255,42,.85);color:var(--navy);font-size:22px;cursor:pointer}
+dialog.lb .prev{left:10px}dialog.lb .next{right:10px}
+/* contact form: lime pills with the layered blue ring, blue button holding the sw!m graphic */
+.form{display:grid;gap:1.8cqw;margin:4cqw 0 0 -2cqw;width:calc(100% + 2cqw)}
+.field{width:100%;background:var(--lime-field);border:.45cqw solid var(--ring1);border-radius:4.3cqw;padding:1.9cqw 2.9cqw;font:inherit;font-weight:200;font-size:4.36cqw;line-height:1.2;color:var(--ink);
+  box-shadow:0 0 0 .25cqw var(--ring3),0 0 0 .5cqw var(--ring5);outline:none;-webkit-appearance:none;appearance:none}
+.field::placeholder{color:var(--ink);opacity:1}
+.field:focus{box-shadow:0 0 0 .25cqw var(--ring3),0 0 0 .5cqw var(--ring5),0 0 0 .9cqw var(--blue)}
+textarea.field{min-height:37cqw;resize:vertical;border-radius:4.3cqw}
+.send{justify-self:end;width:37.2cqw;height:15.6cqw;margin-top:3.2cqw;background:var(--blue);border:.45cqw solid var(--ring1);border-radius:4.3cqw;
+  box-shadow:0 0 0 .25cqw var(--ring3),0 0 0 .5cqw var(--ring5);display:grid;place-items:center;cursor:pointer;padding:0}
+.send img{width:88%;height:auto;display:block}
+.send:hover,.send:focus-visible{box-shadow:0 0 0 .25cqw var(--ring3),0 0 0 .5cqw var(--ring5),0 0 1.5cqw .2cqw var(--lime)}
+.send:active{transform:translateY(1px)}
+.note{font-size:3.2cqw;line-height:1.3;margin:2cqw 0 0;min-height:1.3em;color:var(--blue)}
+/* ---------- desktop (≥900px): the mobile layout unfolded to the viewport edges ----------
+   nav + blue logomark pinned to the left edge, Groteska line to the bottom-right corner,
+   copy in a 640px reading column; type capped in px instead of scaling with the column */
+@media (min-width:900px){
+  :root{--col:none}
+  .site{max-width:none;min-height:100svh}
+  /* every page: nav pinned left and centred in the viewport height; all other text centred both ways in the space to its right */
+  .view{padding:0 64px}
+  /* column 1 is exactly as wide as the nav text; the copy is centred in everything to its right */
+  #v-home main,.page{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:0;align-items:center;min-height:100svh;padding:0;margin:0}
+  #v-home main nav,.page nav{grid-column:1;grid-row:1;align-self:stretch}
+  #v-home .home-copy{grid-column:2;grid-row:1;max-width:640px;width:100%;margin:0 auto;padding:88px 0}
+  #v-home .intro{padding:0;margin-bottom:40px}
+  .float{margin:0 0 48px}
+  .bignav,.sidenav{font-size:64px;line-height:1.09;position:sticky;top:50svh;translate:0 -50%;z-index:3}   /* pinned left, centred in the viewport height */
+  .copy,.lead{max-width:640px;width:100%;margin:0 auto;padding:88px 0;box-sizing:content-box}
+  .copy>:last-child,.lead>:last-child{margin-bottom:0}   /* symmetric block → true vertical centre */
+  .intro{font-size:26px}
+  .copy{font-size:18px;line-height:1.3}
+  .lead{font-size:24px;line-height:1.25}
+  footer{position:fixed;left:64px;right:64px;bottom:36px;padding:0;margin:0;pointer-events:none;z-index:2}
+  footer a,footer small{pointer-events:auto}
+  footer img{width:120px}
+  footer small{font-size:15px;background:var(--paper);padding:6px 10px;margin:-6px -10px}   /* stays legible when long pages scroll beneath it */
+  .logos{grid-template-columns:repeat(3,1fr);gap:40px 48px;margin:24px 0 40px}
+  .logos li{min-height:56px}
+  .logos img{max-height:56px}
+  .logos li.tall img{max-height:84px}
+  .form{gap:12px;margin:32px 0 0;width:100%;max-width:560px}
+  .field{font-size:22px;padding:12px 20px;border-radius:32px;border-width:3px;box-shadow:0 0 0 1.5px var(--ring3),0 0 0 3px var(--ring5)}
+  .field:focus{box-shadow:0 0 0 1.5px var(--ring3),0 0 0 3px var(--ring5),0 0 0 6px var(--blue)}
+  textarea.field{min-height:220px;border-radius:32px}
+  .send{width:220px;height:92px;margin-top:20px;border-radius:32px;border-width:3px;box-shadow:0 0 0 1.5px var(--ring3),0 0 0 3px var(--ring5)}
+  .send:hover,.send:focus-visible{box-shadow:0 0 0 1.5px var(--ring3),0 0 0 3px var(--ring5),0 0 12px 2px var(--lime)}
+  .note{font-size:15px;margin-top:14px}
+  .splash img{width:min(22vh,300px)}
+}
+</style>
+</head>
+<body>
+<div class="splash" id="splash" aria-hidden="true"><img src="svg/logomark-green.svg" alt="" width="684" height="815"></div>
+
+<div class="site">
+
+<!-- home -->
+<section class="view on" id="v-home" data-view="home">
+  <main>
+    <div class="home-copy">
+    <p class="intro"><b>Strategic Works !dea Management</b> is a creative consultancy and event production studio. Out of Singapore, across Asia, we offer high trust tailored solutions and something rarer than just technical proficiency: incorruptible stewardship.</p>
+    <!-- photo wall of past work: tiles hold still and glitch, rotating through every photo; hover/touch focuses one, click opens it -->
+    <div class="float" id="float" aria-label="Past work">
+      <div class="tile" style="--x:8%;--y:0%;--w:25%;--h:34%;--ad:0.00s;--gd:0.0s" data-p="0">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi01476-800.webp" alt="SW!M past work — event photo 1" width="3504" height="2336" decoding="async"><img class="g g1" src="img/work/bgi05230-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd2-1-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+      <div class="tile" style="--x:60%;--y:0%;--w:20%;--h:28%;--ad:0.45s;--gd:0.7s" data-p="1">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi01493-800.webp" alt="SW!M past work — event photo 2" width="3504" height="2336" decoding="async"><img class="g g1" src="img/work/fbw-x-refraction-full-res-063-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd2-5-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+      <div class="tile" style="--x:38%;--y:9%;--w:22%;--h:32%;--ad:0.90s;--gd:1.4s" data-p="2">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi02819-800.webp" alt="SW!M past work — event photo 3" width="3504" height="2336" decoding="async"><img class="g g1" src="img/work/fbw-x-refraction-full-res-100-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd2-55-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+      <div class="tile" style="--x:10%;--y:41%;--w:39%;--h:31%;--ad:1.35s;--gd:2.1s" data-p="3">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi03243-800.webp" alt="SW!M past work — event photo 4" width="4608" height="3072" decoding="async"><img class="g g1" src="img/work/galxe-x-movement-high-res-07-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd2-56-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+      <div class="tile" style="--x:33%;--y:50%;--w:29%;--h:50%;--ad:1.80s;--gd:2.8s" data-p="4">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi03310-800.webp" alt="SW!M past work — event photo 5" width="4608" height="3072" decoding="async"><img class="g g1" src="img/work/galxe-x-movement-high-res-71-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd3-145-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+      <div class="tile" style="--x:56%;--y:37%;--w:32%;--h:44%;--ad:2.25s;--gd:3.5s" data-p="5">
+        <button type="button" class="ph" aria-label="Past work photo, open full size"><img src="img/work/bgi03344-800.webp" alt="SW!M past work — event photo 6" width="4608" height="3072" decoding="async"><img class="g g1" src="img/work/galxe-x-movement-high-res-81-800.webp" alt="" aria-hidden="true" loading="lazy"><img class="g g2" src="img/work/refractionfestd3-177-800.webp" alt="" aria-hidden="true" loading="lazy"></button>
+      </div>
+    </div>
+    </div>
+    <nav aria-label="Sections"><ul class="bignav">
+      <li><a href="#about">About</a></li>
+      <li><a href="#values">Values</a></li>
+      <li><a href="#clients">Clients</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul></nav>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+<!-- about -->
+<section class="view" id="v-about" data-view="about" hidden>
+  <main class="page">
+    <nav aria-label="Sections"><ul class="sidenav">
+      <li><a href="#about">About</a></li><li><a href="#values">Values</a></li><li><a href="#clients">Clients</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="copy">
+      <h1 class="sr">About</h1>
+      <p>Some great ideas arrive formed but fragile; others fragments, buried in noise. They need more than templates or transactions to become reality. <b>SW!M</b> is the oscillator that shifts such ideas out of stasis.</p>
+      <p><b>SW!M</b> delivers and is able to alchemize visions into our world with strategic scaffolding and discernment. We manage a steady frequency that renders out of chaos to return clarity.</p>
+      <p>Activated across Asia, with a network spanning seasoned creatives to emerging creators. Primed to support forward-thinkers at the frontier.</p>
+      <p>Steered by <b>Sharon Shum</b>, creative operations specialist with over 15 years floating across finance, digital media, art and tech.</p>
+    </div>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+<!-- values -->
+<section class="view" id="v-values" data-view="values" hidden>
+  <main class="page">
+    <nav aria-label="Sections"><ul class="sidenav">
+      <li><a href="#about">About</a></li><li><a href="#values">Values</a></li><li><a href="#clients">Clients</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="copy">
+      <h1 class="sr">Values</h1>
+      <p>The real creative asset is calibrated human consciousness. <b>SW!M</b> operates on these four principles to deliver exemplary creative work.</p>
+      <h2>Synchrony</h2>
+      <p>In a realm of scattered data, and competing signals, <b>SW!M</b> structures the field, pulsing noise into a north star, as a gravitational core that brings creative chaos into strategic coherence.</p>
+      <h2>Wisdom</h2>
+      <p>Weighing cultural nuance against commercial reality, <b>SW!M</b> makes calls that matter. We bring a polymathic approach: 15 years of experience bridging creative to technical, ROI and resonance, strategy and soul.</p>
+      <h2>Intuition</h2>
+      <p>Present and attuned, antenna raised, filtering static, reading energy. <b>SW!M</b> catches unspoken concerns or overlooked nuance, then takes swift, sensitized action to manage atmosphere and mitigate risks.</p>
+      <h2>Momentum</h2>
+      <p>Set the vision. <b>SW!M</b> will accelerate and absorb the stress of every curveball so you keep that clear view. Shifting with the current and connecting the tides, <b>SW!M</b> is the force that makes impactful ideas inevitable.</p>
+    </div>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+<!-- clients -->
+<section class="view" id="v-clients" data-view="clients" hidden>
+  <main class="page">
+    <nav aria-label="Sections"><ul class="sidenav">
+      <li><a href="#about">About</a></li><li><a href="#values">Values</a></li><li><a href="#clients">Clients</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="copy">
+      <h1 class="sr">Clients</h1>
+      <p><b>SW!M</b> works with visionaries in AI, DeFi, wellness, and culture with the ambition to shift reality. They bring their edge, never compromise on taste and offer resources to invest in excellence.</p>
+      <p>We seek empowered alignment and frictionless partnership built on trust and creative agency. <b>SW!M</b> works best in scenarios where we contribute tangible value with mindful, expertise-backed contributions, not minimum viable output.</p>
+      <p>Will we resonate and change the game together in ways that matter?</p>
+      <p>Past clients and collaborators include:</p>
+      <ul class="logos" aria-label="Past clients and collaborators">
+        <li><img src="svg/client-aptos.svg" alt="Aptos" width="1500" height="418"></li>
+        <li><img src="svg/client-chaos-labs.svg" alt="Chaos Labs" width="294" height="56"></li>
+        <li class="tall"><img src="svg/client-irl.svg" alt="IRL" width="571" height="313"></li>
+        <li><img src="svg/client-refraction.svg" alt="Refraction" width="307" height="38"></li>
+        <li><img src="svg/client-walletconnect.svg" alt="WalletConnect" width="2102" height="332"></li>
+      </ul>
+    </div>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+<!-- services -->
+<section class="view" id="v-services" data-view="services" hidden>
+  <main class="page">
+    <nav aria-label="Sections"><ul class="sidenav">
+      <li><a href="#about">About</a></li><li><a href="#values">Values</a></li><li><a href="#clients">Clients</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="copy">
+      <h1 class="sr">Services</h1>
+      <p><b>SW!M</b> gives reality-shifting ideas the strategic weight, operational rigour, and creative soul they deserve.</p>
+      <h2>Consulting &amp; Strategic Sense-Check</h2>
+      <p>Honest feedback on creative propositions, pressure-tested for cultural resonance and commercial viability. We sharpen your brief, ask the hard questions and refine the narrative, to let you build with confidence.</p>
+      <h2>Operational Optimization</h2>
+      <p>Finance-grade discipline meets creative agility. We engineer lean budgets, agile timelines and sharp decision-making. Architect workflows like we edit copy – slick, sharp, and highly intentional. Streamlined, so you never sweat the small stuff.</p>
+      <h2>Curatorial Eye &amp; Regional Insight</h2>
+      <p>Wired across major Asian cities, we decode local and deliver with authenticity. We curate talent, art, music, and food that lands with tastemaking cultural precision.</p>
+      <h2>End-to-End &amp; Event Production</h2>
+      <p>Swim with ease from concept to cleanup. We stabilize every factor to produce your brand proof. Staging and logistics. Design and sensory storytelling. On-site crisis control. We execute flawlessly with care and precision at any scale: 50-seat dinners, 500–capacity parties, 5000–flow multi-day conferences.</p>
+    </div>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+<!-- contact -->
+<section class="view" id="v-contact" data-view="contact" hidden>
+  <main class="page">
+    <nav aria-label="Sections"><ul class="sidenav">
+      <li><a href="#about">About</a></li><li><a href="#values">Values</a></li><li><a href="#clients">Clients</a></li><li><a href="#services">Services</a></li><li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="lead">
+      <h1 class="sr">Contact</h1>
+      <p>Have an idea?<br>Sync with <b>SW!M.</b></p>
+      <p>Open to nascent projects, RFPs and retainer engagements.</p>
+      <p>Email <b><a href="mailto:ss@swiim.ing" style="text-decoration:none">ss@swiim.ing</a></b> or fill the form. We will be in touch.</p>
+      <form class="form" id="form" novalidate>
+        <label class="sr" for="f-name">Name</label>
+        <input class="field" id="f-name" name="name" type="text" placeholder="Name" autocomplete="name" required>
+        <label class="sr" for="f-email">Email</label>
+        <input class="field" id="f-email" name="email" type="email" placeholder="Email" autocomplete="email" required>
+        <label class="sr" for="f-msg">Message</label>
+        <textarea class="field" id="f-msg" name="message" placeholder="Message" rows="6" required></textarea>
+        <button class="send" type="submit" aria-label="Send"><img src="svg/button-green.svg" alt="" width="408" height="156"></button>
+        <p class="note" id="note" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </main>
+  <footer><a href="#home" aria-label="SW!M home"><img src="svg/logomark-blue.svg" alt="" width="220" height="218"></a><small>Strategic Works !dea Management</small></footer>
+</section>
+
+</div>
+
+<dialog class="lb" id="lb" aria-label="Photo">
+  <img id="lb-img" alt="">
+  <button type="button" class="nav prev" id="lb-prev" aria-label="Previous photo">‹</button>
+  <button type="button" class="nav next" id="lb-next" aria-label="Next photo">›</button>
+  <button type="button" class="x" id="lb-x" aria-label="Close">×</button>
+</dialog>
+
+<script>
+(() => {
+  // ---- form delivery -------------------------------------------------------
+  // Set FORM_ENDPOINT to a form backend (e.g. Formspree / Basin / your own API) that accepts
+  // a JSON POST of {name,email,message}. When empty, the form falls back to opening the
+  // visitor's mail app with a pre-filled email to ss@swiim.ing.
+  const FORM_ENDPOINT = '';
+  const CONTACT_EMAIL = 'ss@swiim.ing';
+
+  // ---- splash ---------------------------------------------------------------
+  const splash = document.getElementById('splash');
+  const hideSplash = () => { splash.classList.add('out'); setTimeout(() => splash.remove(), 700); };
+  try {
+    if (sessionStorage.getItem('swiim-splash')) splash.remove();
+    else { sessionStorage.setItem('swiim-splash', '1'); setTimeout(hideSplash, 1800); }
+  } catch (e) { setTimeout(hideSplash, 1800); }
+  splash.addEventListener('click', hideSplash);
+
+  // ---- hash routing ---------------------------------------------------------
+  const views = [...document.querySelectorAll('.view')];
+  const names = views.map(v => v.dataset.view);
+  function route() {
+    const h = (location.hash || '#home').slice(1).toLowerCase();
+    const name = names.includes(h) ? h : 'home';
+    views.forEach(v => { const on = v.dataset.view === name; v.classList.toggle('on', on); v.hidden = !on; });
+    document.querySelectorAll('.sidenav a').forEach(a => {
+      if (a.getAttribute('href') === '#' + name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    document.title = (name === 'home' ? '' : name[0].toUpperCase() + name.slice(1) + ' — ') + 'SW!M — Strategic Works !dea Management';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  addEventListener('hashchange', route); route();
+
+  // ---- floating wall + lightbox ----------------------------------------------------
+  const PHOTOS = [{"s":"bgi01476","w":3504,"h":2336},{"s":"bgi01493","w":3504,"h":2336},{"s":"bgi02819","w":3504,"h":2336},{"s":"bgi03243","w":4608,"h":3072},{"s":"bgi03310","w":4608,"h":3072},{"s":"bgi03344","w":4608,"h":3072},{"s":"bgi03498","w":4608,"h":3072},{"s":"bgi05230","w":4608,"h":3072},{"s":"fbw-x-refraction-full-res-063","w":8736,"h":11648},{"s":"fbw-x-refraction-full-res-100","w":8736,"h":11648},{"s":"galxe-x-movement-high-res-07","w":11648,"h":8736},{"s":"galxe-x-movement-high-res-71","w":11648,"h":8736},{"s":"galxe-x-movement-high-res-81","w":11648,"h":8736},{"s":"refractionfestd2-1","w":7400,"h":4936},{"s":"refractionfestd2-5","w":4783,"h":7171},{"s":"refractionfestd2-55","w":7952,"h":5304},{"s":"refractionfestd2-56","w":7952,"h":5304},{"s":"refractionfestd3-145","w":9504,"h":6336},{"s":"refractionfestd3-177","w":9219,"h":6146},{"s":"refractionfestd3-192","w":9504,"h":6336}];
+  const webp = document.createElement('canvas').toDataURL('image/webp').startsWith('data:image/webp');
+  const thumb = p => 'img/work/' + p.s + '-800.' + (webp ? 'webp' : 'jpg');
+  const full = p => 'img/work/' + p.s + '-1600.' + (webp ? 'webp' : 'jpg');
+  const tiles = [...document.querySelectorAll('.tile')];
+  const lb = document.getElementById('lb'), lbImg = document.getElementById('lb-img');
+  let cur = 0;
+  function show(i) { cur = (i + PHOTOS.length) % PHOTOS.length; lbImg.src = full(PHOTOS[cur]); lbImg.alt = 'SW!M past work — event photo ' + (cur + 1); }
+  tiles.forEach(t => {
+    t.querySelector('.ph').addEventListener('click', () => { show(+t.dataset.p); lb.showModal(); });
+    // touch has no hover: a tap focuses the tile briefly before the click opens it
+    t.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') { tiles.forEach(x => x.classList.remove('focus')); t.classList.add('focus'); setTimeout(() => t.classList.remove('focus'), 1600); } });
+  });
+  document.getElementById('lb-x').addEventListener('click', () => lb.close());
+  document.getElementById('lb-prev').addEventListener('click', () => show(cur - 1));
+  document.getElementById('lb-next').addEventListener('click', () => show(cur + 1));
+  lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
+  lb.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') show(cur - 1); if (e.key === 'ArrowRight') show(cur + 1); });
+  lb.addEventListener('close', () => { lbImg.removeAttribute('src'); });
+  // carousel: every few seconds one tile glitches over to the next photo not currently on the wall
+  if (!matchMedia('(prefers-reduced-motion:reduce)').matches && tiles.length) {
+    let next = tiles.length, turn = 0;
+    const preload = i => { const im = new Image(); im.src = thumb(PHOTOS[i % PHOTOS.length]); };
+    preload(next);
+    setTimeout(() => setInterval(() => {
+      if (document.hidden || !document.getElementById('v-home').classList.contains('on')) return;
+      const t = tiles[turn++ % tiles.length]; if (t.matches(':hover') || t.classList.contains('focus')) return;
+      const i = next++ % PHOTOS.length; preload(next);
+      t.classList.add('swap');
+      setTimeout(() => { t.querySelector('img').src = thumb(PHOTOS[i]); t.querySelector('.g1').src = thumb(PHOTOS[(i + 7) % PHOTOS.length]); t.querySelector('.g2').src = thumb(PHOTOS[(i + 13) % PHOTOS.length]); t.dataset.p = i; }, 250);
+      setTimeout(() => t.classList.remove('swap'), 600);
+    }, 3200), 5200);   // start swapping only after every tile has glitched in
+  }
+
+  // ---- contact form ---------------------------------------------------------
+  const form = document.getElementById('form'), note = document.getElementById('note');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (FORM_ENDPOINT) {
+      note.textContent = 'Sending…';
+      try {
+        const r = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(data) });
+        if (!r.ok) throw new Error(r.status);
+        note.textContent = 'Received. We will be in touch.'; form.reset();
+      } catch (err) { note.textContent = 'Could not send. Email ' + CONTACT_EMAIL + ' instead.'; }
+    } else {
+      const subject = encodeURIComponent('Sync with SW!M — ' + data.name);
+      const body = encodeURIComponent(data.message + '\n\n— ' + data.name + ' <' + data.email + '>');
+      note.textContent = 'Opening your mail app…';
+      location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
+    }
+  });
+})();
+</script>
+</body>
+</html>
