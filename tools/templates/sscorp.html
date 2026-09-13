@@ -55,7 +55,7 @@ a.l:active g{opacity:.75}
 /* grey (#939393, the layout's screen colour) now boxes each paragraph instead of the whole screen */
 /* each paragraph sits on a grey slab whose edges feather out into the black */
 .bio p{position:relative;isolation:isolate;margin:0 0 1.1em;padding:.5em .8em;width:fit-content;max-width:100%}
-.bio p::before{content:"";position:absolute;inset:.15em .35em;z-index:-1;background:var(--grey);border-radius:.4em;filter:blur(.55em)}
+.bio p::before{content:"";position:absolute;inset:.15em .35em;z-index:-1;background:var(--grey);border-radius:.4em;filter:blur(.55em);opacity:.6}   /* translucent so the orb reads through */
 .bio .cv{display:block;width:33%;margin:1.1em 2% 0 auto}
 .bio .cv svg{display:block;width:100%;height:auto;overflow:visible}
 .legal{position:absolute;left:0;right:0;bottom:2.4%;margin:0;text-align:center;font-size:2.3cqw;letter-spacing:.06em;color:var(--mint);opacity:.8}
@@ -120,24 +120,7 @@ a.l:active g{opacity:.75}
   </section></div>
 
 </main>
-<script id="hero-vert" type="x-shader/x-vertex">#version 300 es
-precision highp float;
-in vec3 aPos;
-in vec3 aCenter;   /* face centroid (unit sphere) */
-in float aSeed;    /* per-face random 0..1 */
-in float aRnd;     /* per-point random 0..1 */
-in float aEdge;    /* 1 = point lies on an icosahedron edge */
-in float aLine;    /* per-connection random (lines + glow sprites only) */
-uniform mat4 uProj, uView, uModel;
-uniform float uExplode;
-uniform float uPt;      /* base point size (device px) */
-uniform int uMode;      /* 0 cloud specks · 1 connecting lines · 2 glow at line ends */
-out vec3 vN;
-out float vTw, vEdge, vLine, vGlow;
-uniform float uPhase;   /* 0→1 over one loop; everything below is periodic in it */
-uniform float uAmp, uFreq;
-out vec3 vWorld;
-
+<script id="hero-noise" type="x-shader/x-lib">
 /* Classic periodic 3D Perlin noise — Stefan Gustavson / Ashima Arts (MIT) */
 vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
 vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
@@ -154,235 +137,245 @@ float pnoise(vec3 P, vec3 rep){
   vec4 gz0=vec4(0.5)-abs(gx0)-abs(gy0); vec4 sz0=step(gz0,vec4(0.0)); gx0-=sz0*(step(0.0,gx0)-0.5); gy0-=sz0*(step(0.0,gy0)-0.5);
   vec4 gx1=ixy1*(1.0/7.0); vec4 gy1=fract(floor(gx1)*(1.0/7.0))-0.5; gx1=fract(gx1);
   vec4 gz1=vec4(0.5)-abs(gx1)-abs(gy1); vec4 sz1=step(gz1,vec4(0.0)); gx1-=sz1*(step(0.0,gx1)-0.5); gy1-=sz1*(step(0.0,gy1)-0.5);
-  vec3 g000=vec3(gx0.x,gy0.x,gz0.x),g100=vec3(gx0.y,gy0.y,gz0.y),g010=vec3(gx0.z,gy0.z,gz0.z),g110=vec3(gx0.w,gy0.w,gz0.w);
-  vec3 g001=vec3(gx1.x,gy1.x,gz1.x),g101=vec3(gx1.y,gy1.y,gz1.y),g011=vec3(gx1.z,gy1.z,gz1.z),g111=vec3(gx1.w,gy1.w,gz1.w);
-  vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110)));
-  g000*=norm0.x; g010*=norm0.y; g100*=norm0.z; g110*=norm0.w;
-  vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111)));
-  g001*=norm1.x; g011*=norm1.y; g101*=norm1.z; g111*=norm1.w;
-  float n000=dot(g000,Pf0),n100=dot(g100,vec3(Pf1.x,Pf0.yz)),n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)),n110=dot(g110,vec3(Pf1.xy,Pf0.z));
-  float n001=dot(g001,vec3(Pf0.xy,Pf1.z)),n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z)),n011=dot(g011,vec3(Pf0.x,Pf1.yz)),n111=dot(g111,Pf1);
-  vec3 f=fade(Pf0);
-  vec4 nz=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),f.z);
-  vec2 ny=mix(nz.xy,nz.zw,f.y);
-  return 2.2*mix(ny.x,ny.y,f.x);
+  vec3 g000=vec3(gx0.x,gy0.x,gz0.x); vec3 g100=vec3(gx0.y,gy0.y,gz0.y); vec3 g010=vec3(gx0.z,gy0.z,gz0.z); vec3 g110=vec3(gx0.w,gy0.w,gz0.w);
+  vec3 g001=vec3(gx1.x,gy1.x,gz1.x); vec3 g101=vec3(gx1.y,gy1.y,gz1.y); vec3 g011=vec3(gx1.z,gy1.z,gz1.z); vec3 g111=vec3(gx1.w,gy1.w,gz1.w);
+  vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110))); g000*=norm0.x; g010*=norm0.y; g100*=norm0.z; g110*=norm0.w;
+  vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111))); g001*=norm1.x; g011*=norm1.y; g101*=norm1.z; g111*=norm1.w;
+  float n000=dot(g000,Pf0); float n100=dot(g100,vec3(Pf1.x,Pf0.yz)); float n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)); float n110=dot(g110,vec3(Pf1.xy,Pf0.z));
+  float n001=dot(g001,vec3(Pf0.xy,Pf1.z)); float n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z)); float n011=dot(g011,vec3(Pf0.x,Pf1.yz)); float n111=dot(g111,Pf1);
+  vec3 fade_xyz=fade(Pf0);
+  vec4 n_z=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);
+  vec2 n_yz=mix(n_z.xy,n_z.zw,fade_xyz.y); float n_xyz=mix(n_yz.x,n_yz.y,fade_xyz.x);
+  return 2.2*n_xyz;
 }
-/* Loop-safe sampling: time walks a closed circle through the (periodic) noise field, so
-   phase 0 and phase 1 sample the identical point — no seam when the loop wraps. */
-const float TAU=6.28318530718;
-const vec3 REP=vec3(4.0);        /* noise period: the field tiles every 4 units */
-float field(vec3 p){
-  float a=uPhase*TAU;
-  vec3 orbit=vec3(cos(a),sin(a),0.0)*0.9;
-  float n=pnoise(p*uFreq+orbit,REP*uFreq)
-        +0.45*pnoise(p*uFreq*2.0+orbit.yzx*1.7+vec3(7.3),REP*uFreq*2.0);
-  return n;
-}
-vec3 displace(vec3 p){ return p*(1.0+uAmp*field(p)); }
-/* deconstruction: each facet lifts off along its own normal by a loop-safe, per-face amount;
-   only facets whose noise value is positive detach, so most of the body stays intact */
-float lift(){
-  float a=uPhase*TAU;
-  float n=pnoise(vec3(aSeed*11.0,cos(a)*0.55,sin(a)*0.55)+vec3(3.1,0.0,0.0),vec3(16.0,4.0,4.0));   /* small orbit → slow shard travel */
-  return max(n-0.38,0.0)*uExplode*2.4;   /* facets over the threshold (~1 in 3) detach; the core stays a body */
-}
+float h31(vec3 p){ p=fract(p*vec3(0.1031,0.1030,0.0973)); p+=dot(p,p.yxz+33.33); return fract((p.x+p.y)*p.z); }
+</script>
+
+<!-- ── stars: a tunnel of points streaming past the camera, drawn as motion streaks ── -->
+<script id="star-vert" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+in vec3 aStar;     /* angle, radius, z0 */
+in vec2 aInfo;     /* size, tint */
+in float aEnd;     /* 0 = head of streak, 1 = tail */
+uniform mat4 uProj;
+uniform float uPhase, uDepth, uWraps, uExposure, uPts, uDpr;   /* uPts: 1 = point-sprite pass (heads only) */
+out float vA; out vec3 vCol;
 void main(){
-  vec3 P=displace(aPos);
-  float l=lift();
-  P+=aCenter*l*(1.0+0.35*sin(aSeed*TAU*3.0));            /* slide outward */
-  P+=cross(aCenter,vec3(0.0,1.0,0.0))*l*0.35*(aSeed-0.5);  /* with a little sideways drift */
-  /* point-cloud fuzz: each point sits a little off the face, so the surface has thickness */
-  P+=aCenter*(aRnd-0.5)*0.08*(1.0-aEdge*0.6);
-  vec4 w=uModel*vec4(P,1.0);
-  vWorld=w.xyz;
-  vN=mat3(uModel)*aCenter;
-  /* loop-safe twinkle: hash of (point, tick) where tick wraps with the loop */
-  float tick=floor(uPhase*240.0);
-  vTw=fract(sin(aRnd*917.31+tick*13.7+aSeed*41.0)*43758.5453);
-  vEdge=aEdge;
-  /* connections fade in and out on their own loop-safe noise track; glow follows the line */
-  /* the crossing line: a segment lights when the head (uPhase) reaches its start time and fades TAIL later */
-  float la=0.0, lg=0.0;
-  if(uMode>0){
-    const float TAIL=0.10;
-    float t=aLine, head=uPhase;
-    la=smoothstep(t,t+0.006,head)*(1.0-smoothstep(t+TAIL-0.06,t+TAIL,head));
-    lg=la*(0.3+0.7*exp(-(head-t)*45.0));               /* bloom flares as the line arrives, then settles */
-  }
-  vLine=la; vGlow=lg;
-  gl_Position=uProj*uView*w;
-  gl_PointSize=uPt*(0.75+0.7*vTw)*(1.0+aEdge*0.45)*(4.5/gl_Position.w);
-  if(uMode==2) gl_PointSize=uPt*18.0*(4.5/gl_Position.w)*max(lg,0.001);   /* bloom sprite, sized by glow */
+  float z=mod(aStar.z+uPhase*uWraps*uDepth,uDepth);          /* camera pushes forward; wraps exactly at the loop seam */
+  float speed=uWraps*uDepth;                                  /* world units per loop */
+  float tail=aEnd*0.09;                                       /* short streak in depth → dots far away, brief dashes up close */
+  vec3 p=vec3(cos(aStar.x)*aStar.y,sin(aStar.x)*aStar.y,-(uDepth-z)-tail);
+  vec4 c=uProj*vec4(p,1.0);
+  gl_Position=c;
+  float near=1.0-clamp((-p.z)/uDepth,0.0,1.0);               /* 1 close … 0 far */
+  float depthFade=smoothstep(0.0,0.08,(-p.z)/uDepth);
+  vA=(0.45+0.55*near)*(0.5+0.5*aInfo.x)*(1.0-aEnd*0.7)*uExposure*depthFade;
+  if(uPts>0.5) vA*=(1.0-aEnd);                                   /* sprites only at streak heads */
+  vCol=mix(vec3(1.0),mix(vec3(0.85,0.9,1.0),vec3(1.0,0.85,0.95),aInfo.y),0.5);
+  gl_PointSize=uDpr*(1.2+2.2*near)*(0.6+0.6*aInfo.x);
 }
 </script>
-<script id="hero-frag" type="x-shader/x-fragment">#version 300 es
+<script id="star-frag" type="x-shader/x-fragment">#version 300 es
 precision highp float;
-precision highp int;
-in vec3 vWorld;
-in vec3 vN;
-in float vTw, vEdge, vLine, vGlow;
+in float vA; in vec3 vCol; out vec4 o;
+uniform float uPts;
+void main(){ float a=vA; if(uPts>0.5){ vec2 d=gl_PointCoord-0.5; a*=1.0-smoothstep(0.1,0.25,dot(d,d)); } o=vec4(vCol*a,a); }
+</script>
+
+<!-- ── the orb: faceted crystal with a glassy pink interior and sparkle ── -->
+<script id="orb-vert" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+in vec3 aPos;
+uniform mat4 uProj, uView, uModel;
+uniform float uScale;
+out vec3 vWorld, vObj;
+void main(){ vObj=aPos; vec4 w=uModel*vec4(aPos*uScale,1.0); vWorld=w.xyz; gl_Position=uProj*uView*w; }
+</script>
+<script id="orb-frag" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec3 vWorld, vObj;
 uniform vec3 uCam;
-uniform float uPhase;
-uniform int uMode;
+uniform float uPhase, uExposure, uGlow;
+uniform mat4 uModel;
 out vec4 o;
 const float TAU=6.28318530718;
-/* quicksilver point cloud: every point is shaded as a speck of chrome on its facet;
-   mode 1 draws the thin connecting lines, mode 2 the bloom where a line meets a point */
+//NOISE//
 void main(){
-  if(uMode==1){ float a=vLine*0.95; o=vec4(vec3(0.78,1.0,0.94)*a,a); return; }   /* thin line */
-  if(uMode==2){
-    vec2 dd=gl_PointCoord-0.5; float rr=dot(dd,dd);
-    float g=exp(-rr*26.0)*vGlow;                       /* gaussian bloom */
-    float core=exp(-rr*220.0)*vGlow;                   /* hot centre */
-    vec3 c=vec3(0.62,1.0,0.90)*g*0.55+vec3(1.0)*core*0.9;
-    o=vec4(c,(g*0.55+core*0.9));
-    return;
-  }
-  vec2 d=gl_PointCoord-0.5; float r2=dot(d,d);
-  if(r2>0.25) discard;
-  vec3 N=normalize(vN);
+  vec3 Nf=normalize(cross(dFdx(vWorld),dFdy(vWorld)));           /* facet normal */
+  vec3 Ns=normalize(mat3(uModel)*vObj);                          /* smooth normal */
+  vec3 N=normalize(mix(Nf,Ns,0.45));
   vec3 V=normalize(uCam-vWorld);
-  if(dot(N,V)<0.0) N=-N;
-  vec3 R=reflect(-V,N);
-  float up=R.y*0.5+0.5;
-  vec3 env=mix(vec3(0.03,0.04,0.05),vec3(0.42,0.50,0.50),smoothstep(0.12,0.60,up));
-  env=mix(env,vec3(0.90,0.98,0.96),smoothstep(0.70,0.99,up)*0.85);
-  float band=smoothstep(0.30,0.36,up)*(1.0-smoothstep(0.42,0.50,up));
-  env+=band*vec3(0.62,0.70,0.68);
-  env*=0.55+0.45*smoothstep(-0.2,0.6,N.y);
-  float st=sin(R.x*5.0+R.z*3.0+uPhase*TAU*2.0)*0.5+0.5;
-  env+=smoothstep(0.55,0.95,st)*0.28*vec3(0.75,1.0,0.92);
-  float fres=pow(1.0-max(dot(N,V),0.0),3.5);
-  vec3 col=env*0.9+fres*vec3(0.85,1.0,0.96)*0.8;
-  vec3 L1=normalize(vec3(-0.6,0.9,0.7)), L2=normalize(vec3(0.8,-0.2,0.5));
-  col+=pow(max(dot(reflect(-L1,N),V),0.0),90.0)*vec3(1.0);
-  col+=pow(max(dot(reflect(-L2,N),V),0.0),40.0)*vec3(0.58,0.98,0.90)*0.6;
-  col=clamp(col,0.0,1.0);
-  /* edge points a little brighter so the icosahedron's wireframe reads through the cloud */
-  col*=0.7+0.5*vTw+vEdge*0.3;
-  float a=1.0-smoothstep(0.12,0.25,r2);          /* soft round speck */
-  o=vec4(col*a,a);                                /* premultiplied, additive-friendly */
+  float ndv=max(dot(N,V),0.0);
+  float F=pow(1.0-ndv,2.2);
+  /* fake refraction: look into the gem along the refracted ray and read a slowly turning noise field */
+  vec3 R=refract(-V,N,0.72);
+  float a=uPhase*TAU;
+  float n1=pnoise(R*2.6+vec3(cos(a),sin(a),0.0)*0.8,vec3(8.0));
+  float n2=pnoise(R*6.0+vec3(0.0,cos(a)*0.6,sin(a)*0.6)+3.7,vec3(16.0));
+  vec3 magenta=vec3(0.62,0.16,0.60), pink=vec3(0.98,0.60,0.88), lav=vec3(0.80,0.70,0.98), gold=vec3(1.0,0.86,0.55);
+  vec3 interior=mix(magenta,pink,smoothstep(-0.5,0.5,n1));
+  interior=mix(interior,lav,smoothstep(0.35,0.8,n2));
+  interior=mix(interior,gold,smoothstep(0.55,0.95,n1*n2*3.0));
+  /* facets catch light differently: a per-facet brightness from the facet normal */
+  float facet=0.6+0.6*h31(floor(Nf*7.0));
+  vec3 col=interior*facet*(0.5+0.6*ndv);
+  /* inner glow, gentle so the facets stay readable */
+  col+=pink*0.22*pow(ndv,3.0);
+  /* rim */
+  col+=vec3(1.0,0.75,0.95)*F*1.1;
+  /* sparkle glints, flickering on a loop-safe tick */
+  float tick=floor(uPhase*360.0);
+  float g=h31(floor(Ns*11.0)+vec3(tick*0.37));
+  float glint=smoothstep(0.955,0.975,g)*pow(ndv,0.5);
+  col+=vec3(1.0)*glint*1.6;
+  /* specular from two lights */
+  vec3 L1=normalize(vec3(-0.5,0.8,0.6)), L2=normalize(vec3(0.7,-0.3,0.5));
+  col+=pow(max(dot(reflect(-L1,N),V),0.0),70.0)*vec3(1.0,0.95,1.0)*1.2;
+  col+=pow(max(dot(reflect(-L2,N),V),0.0),30.0)*vec3(1.0,0.8,0.95)*0.5;
+  col*=uGlow*uExposure*0.95;
+  o=vec4(col,1.0);
 }
 </script>
+
+<!-- ── flare: bloom, anamorphic streaks and spikes at the orb's centre, screen-space ── -->
+<script id="flare-vert" type="x-shader/x-vertex">#version 300 es
+precision highp float;
+in vec2 aQuad;
+uniform vec2 uCentre;    /* clip-space centre */
+uniform vec2 uSize;      /* clip-space half-size */
+out vec2 vUv;
+void main(){ vUv=aQuad; gl_Position=vec4(uCentre+aQuad*uSize,0.0,1.0); }
+</script>
+<script id="flare-frag" type="x-shader/x-fragment">#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform float uFlare, uBloom, uPhase, uExposure;
+out vec4 o;
+void main(){
+  vec2 p=vUv; float r=length(p);
+  float bloom=exp(-r*r*9.0)*uBloom;                                   /* soft glow around the orb */
+  float core=exp(-r*r*140.0)*uFlare*2.0;                              /* hot centre (birth / collapse only) */
+  float streakH=exp(-abs(p.y)*160.0)*exp(-abs(p.x)*1.6)*(uFlare*1.6+uBloom*0.5);   /* long thin horizontal ray */
+  float streakV=exp(-abs(p.x)*160.0)*exp(-abs(p.y)*2.4)*(uFlare*1.3+uBloom*0.4);   /* vertical ray */
+  float th=atan(p.y,p.x);
+  float spikes=pow(max(cos(th*3.0+0.5),0.0),120.0)*exp(-r*3.2)*(uFlare*0.8+uBloom*0.25);   /* six-ray starburst */
+  float shimmer=0.9+0.1*sin(uPhase*6.2831*40.0+r*30.0);
+  float i=(bloom*0.9+core+streakH+streakV+spikes)*shimmer*uExposure;
+  vec3 c=mix(vec3(1.0,0.72,0.92),vec3(1.0),clamp(i*0.8,0.0,1.0));      /* pink glow, white when hot */
+  o=vec4(c*i,min(i,1.0));
+}
+</script>
+
 <script>
 (() => {
-  // ---- quicksilver icosahedron behind the bio screen -----------------------------------
+  // ---- "yin" hero: star tunnel + newborn crystal orb, behind the bio screen -----------
   const cv = document.getElementById('hero'); if (!cv) return;
   const gl = cv.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true, powerPreference: 'low-power' });
   if (!gl) { cv.remove(); return; }
-  const LOOP = 30000;                                    // ms per seamless loop (slow)
-  const SUBDIV = 0;                                      // a true icosahedron: 20 faces, no subdivision
+  const LOOP = 18000;                                    // ms per cycle: born → grows → sparkles → collapses → dark
   const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const NOISE = document.getElementById('hero-noise').textContent;
+  const src = id => document.getElementById(id).textContent.trim().replace('//NOISE//', NOISE);
+  const sh = (type, s) => { const o = gl.createShader(type); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
+  const program = (v, f) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, src(v))); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, src(f))); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; };
+  const attr = (prog, name, data, size) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW); const loc = gl.getAttribLocation(prog, name); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0); };
+  let rnd = 8675309; const rand = () => (rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
 
-  // icosahedron (optionally subdivided); rendered as a point cloud below
+  // ---- stars: a tube of points around the camera axis; each is a 2-vertex streak ----
+  const NSTAR = 3200, DEPTH = 48, WRAPS = 1;             // stars wrap through the tunnel once per loop → seamless, slow drift
+  const starP = program('star-vert', 'star-frag');
+  const sa = new Float32Array(NSTAR * 6), si = new Float32Array(NSTAR * 4), se = new Float32Array(NSTAR * 2);
+  for (let i = 0; i < NSTAR; i++) {
+    const ang = rand() * Math.PI * 2, rad = 1.2 + Math.pow(rand(), 0.55) * 11.0, z0 = rand() * DEPTH, size = rand(), tint = rand();
+    for (let e = 0; e < 2; e++) { const k = i * 2 + e; sa[k*3] = ang; sa[k*3+1] = rad; sa[k*3+2] = z0; si[k*2] = size; si[k*2+1] = tint; se[k] = e; }
+  }
+  const vaoStars = gl.createVertexArray(); gl.bindVertexArray(vaoStars);
+  attr(starP, 'aStar', sa, 3); attr(starP, 'aInfo', si, 2); attr(starP, 'aEnd', se, 1);
+
+  // ---- orb: icosphere (3 subdivisions, unique vertices for crisp facets) ----
+  const orbP = program('orb-vert', 'orb-frag');
   const t = (1 + Math.sqrt(5)) / 2;
   let V = [[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]].map(v => { const l = Math.hypot(...v); return v.map(x => x / l); });
   let F = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
-  for (let s = 0; s < SUBDIV; s++) {
+  for (let s = 0; s < 3; s++) {
     const cache = new Map(), NF = [];
-    const mid = (a, b) => { const k = a < b ? a + '_' + b : b + '_' + a; if (cache.has(k)) return cache.get(k);
-      const m = [0, 1, 2].map(i => (V[a][i] + V[b][i]) / 2), l = Math.hypot(...m); V.push(m.map(x => x / l)); cache.set(k, V.length - 1); return V.length - 1; };
+    const mid = (a, b) => { const k = a < b ? a + '_' + b : b + '_' + a; if (cache.has(k)) return cache.get(k); const m = [0, 1, 2].map(i => (V[a][i] + V[b][i]) / 2), l = Math.hypot(...m); V.push(m.map(x => x / l)); cache.set(k, V.length - 1); return V.length - 1; };
     for (const [a, b, c] of F) { const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a); NF.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); }
     F = NF;
   }
-  // point cloud: every face becomes a scatter of points — some along its three edges (wireframe), the rest inside
-  const PER_EDGE = 70, INSIDE = 900;      // 20 faces × 1110 = 22,200 points
-  const NPTS = F.length * (PER_EDGE * 3 + INSIDE);
-  const pos = new Float32Array(NPTS * 3), cen = new Float32Array(NPTS * 3), seed = new Float32Array(NPTS), prnd = new Float32Array(NPTS), edge = new Float32Array(NPTS);
-  let k = 0, c = 0, q = 0;
-  let rnd = 1234567; const rand = () => (rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;   // deterministic per build
-  const put = (p, m, r, e) => { pos[k++] = p[0]; pos[k++] = p[1]; pos[k++] = p[2]; cen[c++] = m[0]; cen[c++] = m[1]; cen[c++] = m[2]; seed[q] = r; prnd[q] = rand(); edge[q] = e; q++; };
-  for (const f of F) {
-    const A = V[f[0]], B = V[f[1]], C = V[f[2]];
-    const m = [0, 1, 2].map(i => (A[i] + B[i] + C[i]) / 3), l = Math.hypot(...m), n = m.map(x => x / l), r = rand();
-    for (const [P0, P1] of [[A, B], [B, C], [C, A]]) for (let i = 0; i < PER_EDGE; i++) { const t = (i + rand() * 0.6) / PER_EDGE; put([0, 1, 2].map(j => P0[j] + (P1[j] - P0[j]) * t), n, r, 1); }
-    for (let i = 0; i < INSIDE; i++) { let u = rand(), v = rand(); if (u + v > 1) { u = 1 - u; v = 1 - v; } put([0, 1, 2].map(j => A[j] + (B[j] - A[j]) * u + (C[j] - A[j]) * v), n, r, 0); }
-  }
+  const opos = new Float32Array(F.length * 9); let k = 0;
+  for (const f of F) for (const i of f) { opos[k++] = V[i][0]; opos[k++] = V[i][1]; opos[k++] = V[i][2]; }
+  const vaoOrb = gl.createVertexArray(); gl.bindVertexArray(vaoOrb); attr(orbP, 'aPos', opos, 3);
 
-  // several thin lines, each setting off from its own point in the object and travelling in its own direction,
-  // hopping speck to speck. Start times are staggered through the loop; every line finishes and fades before the wrap.
-  const NPATH = 18, SPANP = 0.22, TAILP = 0.10;              // 18 lines, each crossing in ~6.6s of the 30s loop
-  const paths = [];
-  for (let k = 0; k < NPATH; k++) {
-    let cur = Math.floor(rand() * NPTS);
-    let dir = [rand() - 0.5, rand() - 0.5, (rand() - 0.5) * 0.4]; const dl = Math.hypot(...dir); dir = dir.map(x => x / dl);
-    const pth = [cur];
-    for (let step = 0; step < 60; step++) {
-      let best = -1, bestScore = 1e9;
-      const cx = pos[cur*3], cy = pos[cur*3+1], cz = pos[cur*3+2];
-      for (let i = 0; i < NPTS; i++) {
-        const dx = pos[i*3] - cx, dy = pos[i*3+1] - cy, dz = pos[i*3+2] - cz;
-        const fwd = dx * dir[0] + dy * dir[1] + dz * dir[2]; if (fwd < 0.02) continue;
-        const d = Math.hypot(dx, dy, dz); if (d < 0.05 || d > 0.28) continue;
-        const perp = Math.sqrt(Math.max(d * d - fwd * fwd, 0));
-        const score = d + perp * 0.8 + rand() * 0.05;
-        if (score < bestScore) { bestScore = score; best = i; }
-      }
-      if (best < 0) break; pth.push(best); cur = best;
-    }
-    if (pth.length > 3) paths.push({ pth, start: k * ((1 - SPANP - TAILP) / (NPATH - 1)) });   // first line starts as the page opens
-  }
-  let NSEGT = 0, NNV = 0; for (const p of paths) { NSEGT += p.pth.length - 1; NNV += p.pth.length; }
-  const NLV = NSEGT * 2, NSEG = NSEGT;
-  const lpos = new Float32Array(NLV * 3), lcen = new Float32Array(NLV * 3), lseed = new Float32Array(NLV), lrnd = new Float32Array(NLV), ledge = new Float32Array(NLV), lid = new Float32Array(NLV);
-  const npos = new Float32Array(NNV * 3), ncen = new Float32Array(NNV * 3), nseed = new Float32Array(NNV), nrnd = new Float32Array(NNV), nedge = new Float32Array(NNV), nid = new Float32Array(NNV);
-  let li = 0, ni = 0;
-  for (const { pth, start } of paths) {
-    const n = pth.length - 1;
-    for (let sgi = 0; sgi < n; sgi++) for (const i of [pth[sgi], pth[sgi + 1]]) { lpos.set(pos.subarray(i*3, i*3+3), li*3); lcen.set(cen.subarray(i*3, i*3+3), li*3); lseed[li] = seed[i]; lrnd[li] = prnd[i]; ledge[li] = edge[i]; lid[li] = start + (sgi / n) * SPANP; li++; }
-    for (let j = 0; j <= n; j++) { const i = pth[j]; npos.set(pos.subarray(i*3, i*3+3), ni*3); ncen.set(cen.subarray(i*3, i*3+3), ni*3); nseed[ni] = seed[i]; nrnd[ni] = prnd[i]; nedge[ni] = edge[i]; nid[ni] = start + (Math.min(j, n - 1) / n) * SPANP; ni++; }
-  }
+  // ---- flare quad ----
+  const flareP = program('flare-vert', 'flare-frag');
+  const vaoFlare = gl.createVertexArray(); gl.bindVertexArray(vaoFlare);
+  attr(flareP, 'aQuad', new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), 2);
 
-  const sh = (type, src) => { const o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
-  const prog = gl.createProgram();
-  gl.attachShader(prog, sh(gl.VERTEX_SHADER, document.getElementById('hero-vert').textContent.trim()));
-  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, document.getElementById('hero-frag').textContent.trim()));
-  gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-  gl.useProgram(prog);
-  const attr = (name, data, size) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-    const loc = gl.getAttribLocation(prog, name); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0); };
-  const vaoCloud = gl.createVertexArray(); gl.bindVertexArray(vaoCloud);
-  attr('aPos', pos, 3); attr('aCenter', cen, 3); attr('aSeed', seed, 1); attr('aRnd', prnd, 1); attr('aEdge', edge, 1); attr('aLine', new Float32Array(NPTS), 1);
-  const vaoLines = gl.createVertexArray(); gl.bindVertexArray(vaoLines);
-  attr('aPos', lpos, 3); attr('aCenter', lcen, 3); attr('aSeed', lseed, 1); attr('aRnd', lrnd, 1); attr('aEdge', ledge, 1); attr('aLine', lid, 1);
-  const vaoNodes = gl.createVertexArray(); gl.bindVertexArray(vaoNodes);
-  attr('aPos', npos, 3); attr('aCenter', ncen, 3); attr('aSeed', nseed, 1); attr('aRnd', nrnd, 1); attr('aEdge', nedge, 1); attr('aLine', nid, 1);
-  const U = n => gl.getUniformLocation(prog, n);
-  gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);   // additive-ish specks, no sorting needed
-  gl.uniform1f(U('uAmp'), 0.16); gl.uniform1f(U('uFreq'), 1.0); gl.uniform1f(U('uExplode'), 0.42);
+  const U = (p, n) => gl.getUniformLocation(p, n);
+  gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
-  // minimal matrices
+  // ---- camera / framing ----
   const persp = (fov, a, n, f) => { const s = 1 / Math.tan(fov / 2); return new Float32Array([s / a, 0, 0, 0, 0, s, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]); };
   const lookAt = z => new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -z, 1]);
-  const rot = (ax, ay) => { const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay);
-    return new Float32Array([cy, 0, -sy, 0, sx * sy, cx, sx * cy, 0, cx * sy, -sx, cx * cy, 0, 0, 0, 0, 1]); };
-  const FOV = 0.55; let camZ = 3.4, W = 0, H = 0;
+  const rot = (ax, ay) => { const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay); return new Float32Array([cy, 0, -sy, 0, sx * sy, cx, sx * cy, 0, cx * sy, -sx, cx * cy, 0, 0, 0, 0, 1]); };
+  const FOV = 0.55; let camZ = 6, W = 0, H = 0, aspect = 1, orbFrac = 0.26, proj;
   function fit() {
     const dpr = Math.min(devicePixelRatio || 1, 2); const r = cv.getBoundingClientRect();
     W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
     if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
-    gl.viewport(0, 0, W, H);
-    const aspect = W / H, dpr2 = W / r.width;
-    gl.uniform1f(U('uPt'), 2.1 * dpr2);                       // speck size in device px (scaled by depth in the shader)
-    // target diameter: phones keep the whole shape on screen; desktop lets it spill past the 640px column
-    const diam = r.width < 700 ? 0.92 * Math.min(W, H) : Math.min(1.45 * 640 * dpr2, 0.96 * H, 0.96 * W);
-    camZ = 1.1 / (Math.tan(FOV / 2) * (diam / H));   // 1.1 ≈ circumradius + wobble; slow shards may kiss the edge briefly
-    gl.uniformMatrix4fv(U('uProj'), false, persp(FOV, aspect, 0.1, 20));
-    gl.uniformMatrix4fv(U('uView'), false, lookAt(camZ));
-    gl.uniform3f(U('uCam'), 0, 0, camZ);
+    gl.viewport(0, 0, W, H); aspect = W / H;
+    // orb diameter: ~26% of the phone width, ~30% of the 640px column on desktop
+    const diam = r.width < 700 ? 0.26 * W : Math.min(0.30 * 640 * (W / r.width), 0.4 * H);
+    orbFrac = diam / H;                                         // fraction of the viewport height
+    camZ = 1.0 / (Math.tan(FOV / 2) * orbFrac);
+    proj = persp(FOV, aspect, 0.05, 80);
   }
   new ResizeObserver(fit).observe(cv); fit();
+
+  // ---- life envelope over one cycle (phase 0→1) ----
+  const ss = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
+  function life(p) {
+    const grow = ss(0.03, 0.42, p);                          // point → full orb
+    const die = 1 - ss(0.74, 0.90, p);                        // collapse
+    const size = Math.pow(grow, 0.6) * die;
+    const birth = Math.exp(-Math.pow((p - 0.07) / 0.06, 2));  // flare at birth
+    const death = Math.exp(-Math.pow((p - 0.86) / 0.05, 2));  // flare at collapse
+    const flare = 0.10 * size + 1.4 * birth + 1.1 * death;
+    const bloom = 0.45 * size + 0.4 * birth;
+    const exposure = ss(0.0, 0.05, p) * (1 - ss(0.90, 0.985, p));  // the orb and its light fade to nothing before rebirth
+    const sky = 0.75 + 0.25 * exposure;                               // the star field stays, dipping a little between lives
+    return { size, flare, bloom, exposure, sky };
+  }
 
   let visible = false, raf = 0, t0 = performance.now();
   function frame(now) {
     raf = 0;
-    const phase = ((now - t0) % LOOP) / LOOP;                 // 0→1, wraps seamlessly
-    gl.uniform1f(U('uPhase'), phase);
-    gl.uniformMatrix4fv(U('uModel'), false, rot(0.45, phase * Math.PI * 2));   // one full turn per loop
-    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    gl.bindVertexArray(vaoCloud); gl.uniform1i(U('uMode'), 0); gl.drawArrays(gl.POINTS, 0, NPTS);   // the point cloud
-    gl.bindVertexArray(vaoLines); gl.uniform1i(U('uMode'), 1); gl.drawArrays(gl.LINES, 0, NLV);     // the thin travelling lines
-    gl.bindVertexArray(vaoNodes); gl.uniform1i(U('uMode'), 2); gl.drawArrays(gl.POINTS, 0, NNV);    // bloom at each connected point
+    const phase = ((now - t0) % LOOP) / LOOP;
+    const L = life(reduced ? 0.55 : phase);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+    // stars
+    gl.useProgram(starP); gl.bindVertexArray(vaoStars);
+    gl.uniformMatrix4fv(U(starP, 'uProj'), false, proj);
+    gl.uniform1f(U(starP, 'uPhase'), phase); gl.uniform1f(U(starP, 'uDepth'), DEPTH); gl.uniform1f(U(starP, 'uWraps'), WRAPS); gl.uniform1f(U(starP, 'uExposure'), L.sky);
+    gl.uniform1f(U(starP, 'uDpr'), W / cv.getBoundingClientRect().width);
+    gl.uniform1f(U(starP, 'uPts'), 0); gl.drawArrays(gl.LINES, 0, NSTAR * 2);      // streaks
+    gl.uniform1f(U(starP, 'uPts'), 1); gl.drawArrays(gl.POINTS, 0, NSTAR * 2);     // dot heads
+    // orb
+    if (L.size > 0.002) {
+      gl.useProgram(orbP); gl.bindVertexArray(vaoOrb);
+      gl.uniformMatrix4fv(U(orbP, 'uProj'), false, proj); gl.uniformMatrix4fv(U(orbP, 'uView'), false, lookAt(camZ));
+      gl.uniformMatrix4fv(U(orbP, 'uModel'), false, rot(0.35 + 0.1 * Math.sin(phase * Math.PI * 2), phase * Math.PI * 2 * 1.0));
+      gl.uniform3f(U(orbP, 'uCam'), 0, 0, camZ); gl.uniform1f(U(orbP, 'uScale'), L.size);
+      gl.uniform1f(U(orbP, 'uPhase'), phase); gl.uniform1f(U(orbP, 'uExposure'), L.exposure); gl.uniform1f(U(orbP, 'uGlow'), 0.85 + 0.35 * L.flare);
+      gl.drawArrays(gl.TRIANGLES, 0, opos.length / 3);
+    }
+    // flare
+    gl.useProgram(flareP); gl.bindVertexArray(vaoFlare);
+    const fs = orbFrac * (2.2 + 1.2 * L.flare);                  // quad half-height in viewport-height units
+    gl.uniform2f(U(flareP, 'uCentre'), 0, 0); gl.uniform2f(U(flareP, 'uSize'), fs * 2 / aspect, fs * 2);
+    gl.uniform1f(U(flareP, 'uFlare'), L.flare); gl.uniform1f(U(flareP, 'uBloom'), L.bloom); gl.uniform1f(U(flareP, 'uPhase'), phase); gl.uniform1f(U(flareP, 'uExposure'), L.exposure);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (visible && !reduced && !document.hidden) raf = requestAnimationFrame(frame);
   }
   const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
