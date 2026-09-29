@@ -8,384 +8,119 @@
 <meta name="theme-color" content="#000000">
 <meta property="og:title" content="Sharon Shum is online — SSCORP.io">
 <meta property="og:description" content="Creative ops specialist. Renegade performance artist. SW!M ↔ Sharyfairy.">
-<meta property="og:image" content="img/portrait.jpg">
+<meta property="og:image" content="img/portrait-poster.jpg">
 <meta property="og:type" content="website">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" as="image" href="img/portrait.webp" type="image/webp">
+<link rel="preload" as="font" href="fonts/PFPixelscriptPro.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="fonts/SyneMono-Regular.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="image" href="img/portrait-poster.webp" type="image/webp">
 <style>
-/* colours sampled from "SSCORPio Layout – Mobile.ai" */
-:root{
-  --black:#000000; --grey:#939393;
-  --mint:#93f9e5; --aqua:#61ffe1; --seafoam:#10ffd1;
-  --lilac:#f1d9ff; --lime:#daf794;
-}
+@font-face{font-family:"PF Pixelscript Pro";src:url(fonts/PFPixelscriptPro.woff2) format("woff2");font-display:block}
+@font-face{font-family:"Syne Mono";src:url(fonts/SyneMono-Regular.woff2) format("woff2");font-display:swap}
+/* colours: fills from "SSCORP Layout – Mobile_Text *.svg"; body copy sampled from reference.png */
+:root{--black:#000000;--mint:#cffff6;--lilac:#f1d9ff;--lime:#dfff7d;--cyan:#76fbf5}
 *{box-sizing:border-box}
 html{background:var(--black);scroll-snap-type:y proximity;scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-body{margin:0;background:var(--black);color:var(--seafoam);
-  font-family:"Myriad Pro","Myriad","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-.site{max-width:640px;margin:0 auto;position:relative;z-index:1}
-/* desktop gutters: the portrait's own phosphor dashes, tiled faintly across the black field */
-@media (min-width:660px){
-  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:url(img/gutter-tile.webp) center top/300px auto repeat;opacity:.32;
-    -webkit-mask-image:radial-gradient(ellipse 70% 100% at 50% 50%,transparent 0,transparent 30%,#000 62%);mask-image:radial-gradient(ellipse 70% 100% at 50% 50%,transparent 0,transparent 30%,#000 62%)}
-  .site{box-shadow:0 0 80px 20px rgba(0,0,0,.9)}
-}
-/* every screen is the 1179×2396 artboard from the layout file, scaled to the column width */
+body{margin:0;background:var(--black);color:var(--cyan);font-family:"Syne Mono",ui-monospace,"SF Mono",Menlo,monospace;-webkit-font-smoothing:antialiased}
+.site{max-width:640px;margin:0 auto}
+/* each tile is one phone artboard (≈1100×2260 units), scaled to the column width */
 .slot{min-height:100svh;display:flex;align-items:center;scroll-snap-align:start}
-.slot.s1,.slot.s2,.slot.s3{background:var(--black)}
-.screen{position:relative;width:100%;aspect-ratio:1179/2396;container-type:inline-size;overflow:hidden}
-.screen>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.s1,.s3{background:var(--black)}
-.screen.s2{background:transparent}
-.slot.s2{position:relative}
-.hero{position:absolute;top:0;bottom:0;left:50%;width:100vw;height:100%;translate:-50% 0;display:block;z-index:0}   /* spans the whole viewport width even though the column is 640px, so nothing clips it on desktop */
-.slot.s2 .screen{position:relative;z-index:1}
-.s2>svg,.s2>.bio{z-index:1}
-.portrait{position:absolute;left:.04%;top:8.51%;width:98.9%;height:63.3%;object-fit:fill;display:block}
+.tile{position:relative;width:min(100%,calc(100svh * 1100 / 2260));margin:0 auto;aspect-ratio:1100/2260;container-type:inline-size;overflow:hidden;background:var(--black)}   /* never taller than the viewport: one tile is always fully on screen */
+.tile>svg.lay{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pf{font-family:"PF Pixelscript Pro"}
+/* tile 1: the portrait loop fills the tile, lettering sits on top */
+.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--black) url(img/portrait-poster.webp) center/cover}
+/* tile 2: positions measured from reference.png (percent of the tile) */
+.someone{position:absolute;left:52.5%;top:7.57%;width:37.8%;height:auto;display:block}
+.bio{position:absolute;left:10%;top:26.9%;width:82%;margin:0;font-size:3.18cqw;line-height:1.2;color:var(--cyan);text-wrap:pretty}
+.bio p{margin:0 0 1.2em}
+.bio p:last-child{margin-bottom:0}
+.cv{position:absolute;left:60.1%;top:82.7%;width:26.7%;display:block}
+.cv svg{display:block;width:100%;height:auto}
 /* lettering links */
-a.l{cursor:pointer;outline:none}
-a.l g{transition:filter .25s ease,opacity .25s ease}
-a.l:hover g,a.l:focus-visible g{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 0 2px currentColor)}
-a.l:active g{opacity:.75}
-.mint{color:var(--mint)}.lime{color:var(--lime)}.aqua{color:var(--aqua)}.lilac{color:var(--lilac)}
-/* bio copy — Myriad Pro 40pt on the 1179-unit artboard, colour #10ffd1 */
-.bio{position:absolute;left:calc(16.45% - .8em);top:17.6%;width:calc(78% + 1.6em);margin:0;font-size:3.39cqw;line-height:1.2;color:var(--seafoam);
-  font-weight:400;letter-spacing:.005em;text-wrap:pretty}
-/* grey (#939393, the layout's screen colour) now boxes each paragraph instead of the whole screen */
-/* each paragraph sits on a grey slab whose edges feather out into the black */
-.bio p{position:relative;isolation:isolate;margin:0 0 1.1em;padding:.5em .8em;width:fit-content;max-width:100%}
-.bio p::before{content:"";position:absolute;inset:.15em .35em;z-index:-1;background:var(--grey);border-radius:.4em;filter:blur(.55em);opacity:.6}   /* translucent so the orb reads through */
-.bio .cv{display:block;width:33%;margin:1.1em 2% 0 auto}
-.bio .cv svg{display:block;width:100%;height:auto;overflow:visible}
-.legal{position:absolute;left:0;right:0;bottom:2.4%;margin:0;text-align:center;font-size:2.3cqw;letter-spacing:.06em;color:var(--mint);opacity:.8}
-.legal a{color:inherit;text-decoration:none}
+a.l{cursor:pointer;outline:none;color:inherit}
+a.l g,a.l text,a.l svg{transition:filter .25s ease,opacity .25s ease}
+a.l:hover g,a.l:focus-visible g,a.l:hover text,a.l:focus-visible text,a.l:hover>svg,a.l:focus-visible>svg{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 0 2px currentColor)}
+a.l:active g,a.l:active text,a.l:active>svg{opacity:.75}
+.mint{color:var(--mint)}.lime{color:var(--lime)}.lilac{color:var(--lilac)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* desktop: the three tiles side by side, scaled so all three fit the viewport */
+@media (min-width:900px){
+  :root{--tw:min(calc(100svh * 1100 / 2260),calc((100vw - 2px) / 3))}
+  html{scroll-snap-type:none}
+  body{min-height:100svh;display:grid;place-items:center}
+  .site{max-width:none;margin:0;display:flex;gap:1px}
+  .slot{min-height:0;display:block}
+  .tile{width:var(--tw);height:calc(var(--tw) * 2260 / 1100)}
+}
 </style>
 </head>
 <body>
 <main class="site" id="top">
 
-  <!-- 01 · hero -->
-  <div class="slot s1"><section class="screen s1" aria-label="Sharon Shum is online">
-    <picture>
-      <source srcset="img/portrait.webp" type="image/webp">
-      <img class="portrait" src="img/portrait.jpg" width="984" height="1280" alt="Sharon Shum, portrait rendered in green phosphor" fetchpriority="high">
-    </picture>
-    <svg viewBox="0 0 1179 2396" aria-hidden="true">
-      <g id="sharon-shum">{{group:0:sharon-shum}}</g>
-      <g id="creative-ops">{{group:0:creative-ops}}</g>
-      <g id="renegade">{{group:0:renegade}}</g>
-      <a class="l mint" href="#bio" aria-label="Scroll to bio"><g id="is-online">{{group:0:is-online}}</g></a>
+  <!-- 01 · portrait -->
+  <div class="slot"><section class="tile t1" aria-label="Sharon Shum is online">
+    <video class="vid" id="vid" autoplay muted loop playsinline preload="auto" poster="img/portrait-poster.webp" aria-hidden="true">
+      <source src="img/portrait.webm" type="video/webm">
+      <source src="img/portrait.mp4" type="video/mp4">
+    </video>
+    <svg class="lay" viewBox="{{vb1}}" aria-hidden="true">
+      <g id="sharon-shum">{{1:sharon-shum}}</g>
+      <g id="creative-ops">{{1:creative-ops}}</g>
+      <g id="renegade">{{1:renegade}}</g>
+      <a class="l mint" href="#bio" aria-label="Scroll to bio"><g id="is-online">{{1:is-online}}</g></a>
     </svg>
-    <h1 class="sr">Sharon Shum — creative ops specialist, renegade performance artist — is online</h1>
+    <h1 class="sr">Sharon Shum — creative ops specialist &amp; renegade performance artist — is online</h1>
   </section></div>
 
   <!-- 02 · bio -->
-  <div class="slot s2" id="bio"><canvas class="hero" id="hero" aria-hidden="true"></canvas><section class="screen s2" aria-label="Someone who gets sh*t done">
-    <svg viewBox="0 0 1179 2396" aria-hidden="true">
-      <g id="someone">{{group:1:someone}}</g>
-    </svg>
+  <div class="slot" id="bio"><section class="tile t2" aria-label="Someone who gets sh*t done">
+    <svg class="someone" viewBox="{{vb2a}}" aria-hidden="true">{{2:someone}}</svg>
     <h2 class="sr">Someone who gets sh*t done!</h2>
     <div class="bio">
       <p>Sharon Shum (b. 1990, Singapore) is the founder of creative consultancy and event production studio SW!M Strategic Works !dea Management and an active arts practitioner known as Sharyfairy.</p>
-      <p>She is also integral to global artist community and web3 creative agency Refraction, loyalty points and perks for culture IRL.energy and Southeast Asian collective and record label Strange Weather.</p>
-      <p>Self-proclaimed ‘first-generalist’ that somehow fell into a series of sprawly scope-defying roles, her diverse experience spans across digital media, events, finance, music and tech.</p>
-      <p>Raw perspective, hot takes and &gt;15 years of know-how across quantitative and qualitative roles. Adept at complex problem-solving complex, she is an attuned pattern-recognizer who processes big pictures down to minutest detail.</p>
-      <p>Open to commissions, collaborations or work opportunities with the radical minds and vision-aligned.</p>
-      <!-- CV DOWNLOAD lettering follows the last paragraph so it can never collide with the copy -->
-      <a class="l lime cv" href="files/Sharon-Shum-CV.pdf" target="_blank" rel="noopener" aria-label="Download CV (PDF)"><svg viewBox="698 1666 304 214" aria-hidden="true"><g id="cv-download">{{group:1:cv-download}}</g></svg></a>
+      <p>Self-proclaimed ‘first-generalist’ that somehow fell into a series of sprawly scope-defying roles, her experience spans digital media, events, finance and tech.</p>
+      <p>Organizes independently, operates flexibly, flitting between worlds. She is integral to global artist-led web3 agency Refraction, culture-forward loyalty perks program IRL.energy and Southeast Asian collective &amp; record label Strange Weather.</p>
+      <p>Raw perspective, hot takes and lifetimes of know-how across quantitative and qualitative roles. Adept at complex problem-solving, attuned at pattern recognizing, processing big pictures into pixels.</p>
+      <p>Open to commissions, collabs or work opportunities with radical minds and the vision-aligned.</p>
     </div>
-    <a class="sr" href="files/Sharon-Shum-CV.pdf" target="_blank" rel="noopener">CV download (PDF)</a>
+    <a class="l lime cv" href="files/Sharon-Shum-CV.pdf" download="Sharon-Shum-CV.pdf" aria-label="Download CV (PDF)"><svg viewBox="{{vb2b}}" aria-hidden="true">{{2:cv-download}}</svg></a>
   </section></div>
 
   <!-- 03 · portals -->
-  <div class="slot s3" id="portals"><section class="screen s3" aria-label="Portals and contact">
-    <svg viewBox="0 0 1179 2396" aria-hidden="true">
-      <a class="l mint" href="#top" aria-label="Back to top"><g id="ss">{{group:2:ss}}</g></a>
-      <g id="creative-ops-2">{{group:2:creative-ops}}</g>
-      <a class="l lime" href="https://swiim.ing" data-local="../swiim.ing/" aria-label="SWIIM.ING — SW!M Strategic Works !dea Management"><g id="swiim-ing">{{group:2:swiim-ing}}</g></a>
-      <g id="renegade-2">{{group:2:renegade}}</g>
-      <a class="l lime" href="https://shary.fyi" data-local="../shary.fyi/" aria-label="SHARY.FYI — Sharyfairy"><g id="shary-fyi">{{group:2:shary-fyi}}</g></a>
-      <g id="is-online-2">{{group:2:is-online}}</g>
-      <g id="contact">{{group:2:contact}}</g>
-      <a class="l aqua" href="mailto:me@sscorp.io" aria-label="Email me@sscorp.io"><g id="me-at-sscorp">{{group:2:me-at-sscorp}}</g></a>
+  <div class="slot" id="portals"><section class="tile t3" aria-label="Portals and contact">
+    <svg class="lay" viewBox="{{vb3}}" aria-hidden="true">
+      <a class="l mint" href="#top" aria-label="Back to top"><g id="ss">{{3:ss}}</g></a>
+      <g id="www">{{3:www}}</g>
+      <g id="creative-ops-2">{{3:creative-ops}}</g>
+      <a class="l lime" href="https://swiim.ing" data-local="../swiim.ing/" aria-label="SWIIM.ING — SW!M Strategic Works !dea Management"><g id="swiim-ing">{{3:swiim-ing}}</g></a>
+      <g id="renegade-2">{{3:renegade}}</g>
+      <a class="l lime" href="https://shary.fyi" data-local="../shary.fyi/" aria-label="SHARY.FYI — Sharyfairy"><g id="shary-fyi">{{3:shary-fyi}}</g></a>
+      <g id="is-online-2">{{3:is-online}}</g>
+      <g id="dots">{{3:dots}}</g>
+      <g id="contact">{{3:contact}}</g>
+      <a class="l mint" href="mailto:me@sscorp.io" aria-label="Email me@sscorp.io"><g id="me-at-sscorp">{{3:me-at-sscorp}}</g></a>
+      <g id="mmm">{{3:mmm}}</g>
     </svg>
     <nav class="sr" aria-label="Portals">
       <a href="https://swiim.ing" data-local="../swiim.ing/">Creative ops specialist → SWIIM.ING</a>
       <a href="https://shary.fyi" data-local="../shary.fyi/">Renegade performance artist → SHARY.FYI</a>
       <a href="mailto:me@sscorp.io">Contact: me@sscorp.io</a>
     </nav>
-    <p class="legal">&copy; 2026 <a href="https://sscorp.io">SSCORP.io</a>. No Wrongs Reserved.</p>
   </section></div>
 
 </main>
-<script id="hero-noise" type="x-shader/x-lib">
-/* Classic periodic 3D Perlin noise — Stefan Gustavson / Ashima Arts (MIT) */
-vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
-vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
-vec4 permute(vec4 x){return mod289(((x*34.0)+10.0)*x);}
-vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
-vec3 fade(vec3 t){return t*t*t*(t*(t*6.0-15.0)+10.0);}
-float pnoise(vec3 P, vec3 rep){
-  vec3 Pi0=mod(floor(P),rep); vec3 Pi1=mod(Pi0+vec3(1.0),rep);
-  Pi0=mod289(Pi0); Pi1=mod289(Pi1);
-  vec3 Pf0=fract(P); vec3 Pf1=Pf0-vec3(1.0);
-  vec4 ix=vec4(Pi0.x,Pi1.x,Pi0.x,Pi1.x); vec4 iy=vec4(Pi0.yy,Pi1.yy); vec4 iz0=Pi0.zzzz; vec4 iz1=Pi1.zzzz;
-  vec4 ixy=permute(permute(ix)+iy); vec4 ixy0=permute(ixy+iz0); vec4 ixy1=permute(ixy+iz1);
-  vec4 gx0=ixy0*(1.0/7.0); vec4 gy0=fract(floor(gx0)*(1.0/7.0))-0.5; gx0=fract(gx0);
-  vec4 gz0=vec4(0.5)-abs(gx0)-abs(gy0); vec4 sz0=step(gz0,vec4(0.0)); gx0-=sz0*(step(0.0,gx0)-0.5); gy0-=sz0*(step(0.0,gy0)-0.5);
-  vec4 gx1=ixy1*(1.0/7.0); vec4 gy1=fract(floor(gx1)*(1.0/7.0))-0.5; gx1=fract(gx1);
-  vec4 gz1=vec4(0.5)-abs(gx1)-abs(gy1); vec4 sz1=step(gz1,vec4(0.0)); gx1-=sz1*(step(0.0,gx1)-0.5); gy1-=sz1*(step(0.0,gy1)-0.5);
-  vec3 g000=vec3(gx0.x,gy0.x,gz0.x); vec3 g100=vec3(gx0.y,gy0.y,gz0.y); vec3 g010=vec3(gx0.z,gy0.z,gz0.z); vec3 g110=vec3(gx0.w,gy0.w,gz0.w);
-  vec3 g001=vec3(gx1.x,gy1.x,gz1.x); vec3 g101=vec3(gx1.y,gy1.y,gz1.y); vec3 g011=vec3(gx1.z,gy1.z,gz1.z); vec3 g111=vec3(gx1.w,gy1.w,gz1.w);
-  vec4 norm0=taylorInvSqrt(vec4(dot(g000,g000),dot(g010,g010),dot(g100,g100),dot(g110,g110))); g000*=norm0.x; g010*=norm0.y; g100*=norm0.z; g110*=norm0.w;
-  vec4 norm1=taylorInvSqrt(vec4(dot(g001,g001),dot(g011,g011),dot(g101,g101),dot(g111,g111))); g001*=norm1.x; g011*=norm1.y; g101*=norm1.z; g111*=norm1.w;
-  float n000=dot(g000,Pf0); float n100=dot(g100,vec3(Pf1.x,Pf0.yz)); float n010=dot(g010,vec3(Pf0.x,Pf1.y,Pf0.z)); float n110=dot(g110,vec3(Pf1.xy,Pf0.z));
-  float n001=dot(g001,vec3(Pf0.xy,Pf1.z)); float n101=dot(g101,vec3(Pf1.x,Pf0.y,Pf1.z)); float n011=dot(g011,vec3(Pf0.x,Pf1.yz)); float n111=dot(g111,Pf1);
-  vec3 fade_xyz=fade(Pf0);
-  vec4 n_z=mix(vec4(n000,n100,n010,n110),vec4(n001,n101,n011,n111),fade_xyz.z);
-  vec2 n_yz=mix(n_z.xy,n_z.zw,fade_xyz.y); float n_xyz=mix(n_yz.x,n_yz.y,fade_xyz.x);
-  return 2.2*n_xyz;
-}
-float h31(vec3 p){ p=fract(p*vec3(0.1031,0.1030,0.0973)); p+=dot(p,p.yxz+33.33); return fract((p.x+p.y)*p.z); }
-</script>
-
-<!-- ── stars: a tunnel of points streaming past the camera, drawn as motion streaks ── -->
-<script id="star-vert" type="x-shader/x-vertex">#version 300 es
-precision highp float;
-in vec3 aStar;     /* angle, radius, z0 */
-in vec2 aInfo;     /* size, tint */
-in float aEnd;     /* 0 = head of streak, 1 = tail */
-uniform mat4 uProj;
-uniform float uPhase, uDepth, uWraps, uExposure, uPts, uDpr;   /* uPts: 1 = point-sprite pass (heads only) */
-out float vA; out vec3 vCol;
-void main(){
-  float z=mod(aStar.z+uPhase*uWraps*uDepth,uDepth);          /* camera pushes forward; wraps exactly at the loop seam */
-  float speed=uWraps*uDepth;                                  /* world units per loop */
-  float tail=aEnd*0.09;                                       /* short streak in depth → dots far away, brief dashes up close */
-  vec3 p=vec3(cos(aStar.x)*aStar.y,sin(aStar.x)*aStar.y,-(uDepth-z)-tail);
-  vec4 c=uProj*vec4(p,1.0);
-  gl_Position=c;
-  float near=1.0-clamp((-p.z)/uDepth,0.0,1.0);               /* 1 close … 0 far */
-  float depthFade=smoothstep(0.0,0.08,(-p.z)/uDepth);
-  vA=(0.45+0.55*near)*(0.5+0.5*aInfo.x)*(1.0-aEnd*0.7)*uExposure*depthFade;
-  if(uPts>0.5) vA*=(1.0-aEnd);                                   /* sprites only at streak heads */
-  vCol=mix(vec3(1.0),mix(vec3(0.85,0.9,1.0),vec3(1.0,0.85,0.95),aInfo.y),0.5);
-  gl_PointSize=uDpr*(1.2+2.2*near)*(0.6+0.6*aInfo.x);
-}
-</script>
-<script id="star-frag" type="x-shader/x-fragment">#version 300 es
-precision highp float;
-in float vA; in vec3 vCol; out vec4 o;
-uniform float uPts;
-void main(){ float a=vA; if(uPts>0.5){ vec2 d=gl_PointCoord-0.5; a*=1.0-smoothstep(0.1,0.25,dot(d,d)); } o=vec4(vCol*a,a); }
-</script>
-
-<!-- ── the orb: faceted crystal with a glassy pink interior and sparkle ── -->
-<script id="orb-vert" type="x-shader/x-vertex">#version 300 es
-precision highp float;
-in vec3 aPos;
-uniform mat4 uProj, uView, uModel;
-uniform float uScale;
-out vec3 vWorld, vObj;
-void main(){ vObj=aPos; vec4 w=uModel*vec4(aPos*uScale,1.0); vWorld=w.xyz; gl_Position=uProj*uView*w; }
-</script>
-<script id="orb-frag" type="x-shader/x-fragment">#version 300 es
-precision highp float;
-in vec3 vWorld, vObj;
-uniform vec3 uCam;
-uniform float uPhase, uExposure, uGlow;
-uniform mat4 uModel;
-out vec4 o;
-const float TAU=6.28318530718;
-//NOISE//
-void main(){
-  vec3 Nf=normalize(cross(dFdx(vWorld),dFdy(vWorld)));           /* facet normal */
-  vec3 Ns=normalize(mat3(uModel)*vObj);                          /* smooth normal */
-  vec3 N=normalize(mix(Nf,Ns,0.45));
-  vec3 V=normalize(uCam-vWorld);
-  float ndv=max(dot(N,V),0.0);
-  float F=pow(1.0-ndv,2.2);
-  /* fake refraction: look into the gem along the refracted ray and read a slowly turning noise field */
-  vec3 R=refract(-V,N,0.72);
-  float a=uPhase*TAU;
-  float n1=pnoise(R*2.6+vec3(cos(a),sin(a),0.0)*0.8,vec3(8.0));
-  float n2=pnoise(R*6.0+vec3(0.0,cos(a)*0.6,sin(a)*0.6)+3.7,vec3(16.0));
-  vec3 magenta=vec3(0.62,0.16,0.60), pink=vec3(0.98,0.60,0.88), lav=vec3(0.80,0.70,0.98), gold=vec3(1.0,0.86,0.55);
-  vec3 interior=mix(magenta,pink,smoothstep(-0.5,0.5,n1));
-  interior=mix(interior,lav,smoothstep(0.35,0.8,n2));
-  interior=mix(interior,gold,smoothstep(0.55,0.95,n1*n2*3.0));
-  /* facets catch light differently: a per-facet brightness from the facet normal */
-  float facet=0.6+0.6*h31(floor(Nf*7.0));
-  vec3 col=interior*facet*(0.5+0.6*ndv);
-  /* inner glow, gentle so the facets stay readable */
-  col+=pink*0.22*pow(ndv,3.0);
-  /* rim */
-  col+=vec3(1.0,0.75,0.95)*F*1.1;
-  /* sparkle glints, flickering on a loop-safe tick */
-  float tick=floor(uPhase*360.0);
-  float g=h31(floor(Ns*11.0)+vec3(tick*0.37));
-  float glint=smoothstep(0.955,0.975,g)*pow(ndv,0.5);
-  col+=vec3(1.0)*glint*1.6;
-  /* specular from two lights */
-  vec3 L1=normalize(vec3(-0.5,0.8,0.6)), L2=normalize(vec3(0.7,-0.3,0.5));
-  col+=pow(max(dot(reflect(-L1,N),V),0.0),70.0)*vec3(1.0,0.95,1.0)*1.2;
-  col+=pow(max(dot(reflect(-L2,N),V),0.0),30.0)*vec3(1.0,0.8,0.95)*0.5;
-  col*=uGlow*uExposure*0.95;
-  o=vec4(col,1.0);
-}
-</script>
-
-<!-- ── flare: bloom, anamorphic streaks and spikes at the orb's centre, screen-space ── -->
-<script id="flare-vert" type="x-shader/x-vertex">#version 300 es
-precision highp float;
-in vec2 aQuad;
-uniform vec2 uCentre;    /* clip-space centre */
-uniform vec2 uSize;      /* clip-space half-size */
-out vec2 vUv;
-void main(){ vUv=aQuad; gl_Position=vec4(uCentre+aQuad*uSize,0.0,1.0); }
-</script>
-<script id="flare-frag" type="x-shader/x-fragment">#version 300 es
-precision highp float;
-in vec2 vUv;
-uniform float uFlare, uBloom, uPhase, uExposure;
-out vec4 o;
-void main(){
-  vec2 p=vUv; float r=length(p);
-  float bloom=exp(-r*r*9.0)*uBloom;                                   /* soft glow around the orb */
-  float core=exp(-r*r*140.0)*uFlare*2.0;                              /* hot centre (birth / collapse only) */
-  float streakH=exp(-abs(p.y)*160.0)*exp(-abs(p.x)*1.6)*(uFlare*1.6+uBloom*0.5);   /* long thin horizontal ray */
-  float streakV=exp(-abs(p.x)*160.0)*exp(-abs(p.y)*2.4)*(uFlare*1.3+uBloom*0.4);   /* vertical ray */
-  float th=atan(p.y,p.x);
-  float spikes=pow(max(cos(th*3.0+0.5),0.0),120.0)*exp(-r*3.2)*(uFlare*0.8+uBloom*0.25);   /* six-ray starburst */
-  float shimmer=0.9+0.1*sin(uPhase*6.2831*40.0+r*30.0);
-  float i=(bloom*0.9+core+streakH+streakV+spikes)*shimmer*uExposure;
-  vec3 c=mix(vec3(1.0,0.72,0.92),vec3(1.0),clamp(i*0.8,0.0,1.0));      /* pink glow, white when hot */
-  o=vec4(c*i,min(i,1.0));
-}
-</script>
-
 <script>
+/* portrait loop: honour reduced motion, and only run while the tile is on screen */
 (() => {
-  // ---- "yin" hero: star tunnel + newborn crystal orb, behind the bio screen -----------
-  const cv = document.getElementById('hero'); if (!cv) return;
-  const gl = cv.getContext('webgl2', { alpha: true, antialias: true, premultipliedAlpha: true, powerPreference: 'low-power' });
-  if (!gl) { cv.remove(); return; }
-  const LOOP = 18000;                                    // ms per cycle: born → grows → sparkles → collapses → dark
-  const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const NOISE = document.getElementById('hero-noise').textContent;
-  const src = id => document.getElementById(id).textContent.trim().replace('//NOISE//', NOISE);
-  const sh = (type, s) => { const o = gl.createShader(type); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(o)); return o; };
-  const program = (v, f) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, src(v))); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, src(f))); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); return p; };
-  const attr = (prog, name, data, size) => { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW); const loc = gl.getAttribLocation(prog, name); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0); };
-  let rnd = 8675309; const rand = () => (rnd = (rnd * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
-
-  // ---- stars: a tube of points around the camera axis; each is a 2-vertex streak ----
-  const NSTAR = 3200, DEPTH = 48, WRAPS = 1;             // stars wrap through the tunnel once per loop → seamless, slow drift
-  const starP = program('star-vert', 'star-frag');
-  const sa = new Float32Array(NSTAR * 6), si = new Float32Array(NSTAR * 4), se = new Float32Array(NSTAR * 2);
-  for (let i = 0; i < NSTAR; i++) {
-    const ang = rand() * Math.PI * 2, rad = 1.2 + Math.pow(rand(), 0.55) * 11.0, z0 = rand() * DEPTH, size = rand(), tint = rand();
-    for (let e = 0; e < 2; e++) { const k = i * 2 + e; sa[k*3] = ang; sa[k*3+1] = rad; sa[k*3+2] = z0; si[k*2] = size; si[k*2+1] = tint; se[k] = e; }
-  }
-  const vaoStars = gl.createVertexArray(); gl.bindVertexArray(vaoStars);
-  attr(starP, 'aStar', sa, 3); attr(starP, 'aInfo', si, 2); attr(starP, 'aEnd', se, 1);
-
-  // ---- orb: icosphere (3 subdivisions, unique vertices for crisp facets) ----
-  const orbP = program('orb-vert', 'orb-frag');
-  const t = (1 + Math.sqrt(5)) / 2;
-  let V = [[-1,t,0],[1,t,0],[-1,-t,0],[1,-t,0],[0,-1,t],[0,1,t],[0,-1,-t],[0,1,-t],[t,0,-1],[t,0,1],[-t,0,-1],[-t,0,1]].map(v => { const l = Math.hypot(...v); return v.map(x => x / l); });
-  let F = [[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
-  for (let s = 0; s < 3; s++) {
-    const cache = new Map(), NF = [];
-    const mid = (a, b) => { const k = a < b ? a + '_' + b : b + '_' + a; if (cache.has(k)) return cache.get(k); const m = [0, 1, 2].map(i => (V[a][i] + V[b][i]) / 2), l = Math.hypot(...m); V.push(m.map(x => x / l)); cache.set(k, V.length - 1); return V.length - 1; };
-    for (const [a, b, c] of F) { const ab = mid(a, b), bc = mid(b, c), ca = mid(c, a); NF.push([a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]); }
-    F = NF;
-  }
-  const opos = new Float32Array(F.length * 9); let k = 0;
-  for (const f of F) for (const i of f) { opos[k++] = V[i][0]; opos[k++] = V[i][1]; opos[k++] = V[i][2]; }
-  const vaoOrb = gl.createVertexArray(); gl.bindVertexArray(vaoOrb); attr(orbP, 'aPos', opos, 3);
-
-  // ---- flare quad ----
-  const flareP = program('flare-vert', 'flare-frag');
-  const vaoFlare = gl.createVertexArray(); gl.bindVertexArray(vaoFlare);
-  attr(flareP, 'aQuad', new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), 2);
-
-  const U = (p, n) => gl.getUniformLocation(p, n);
-  gl.disable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
-  // ---- camera / framing ----
-  const persp = (fov, a, n, f) => { const s = 1 / Math.tan(fov / 2); return new Float32Array([s / a, 0, 0, 0, 0, s, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]); };
-  const lookAt = z => new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, -z, 1]);
-  const rot = (ax, ay) => { const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay); return new Float32Array([cy, 0, -sy, 0, sx * sy, cx, sx * cy, 0, cx * sy, -sx, cx * cy, 0, 0, 0, 0, 1]); };
-  const FOV = 0.55; let camZ = 6, W = 0, H = 0, aspect = 1, orbFrac = 0.26, proj;
-  function fit() {
-    const dpr = Math.min(devicePixelRatio || 1, 2); const r = cv.getBoundingClientRect();
-    W = Math.max(1, Math.round(r.width * dpr)); H = Math.max(1, Math.round(r.height * dpr));
-    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
-    gl.viewport(0, 0, W, H); aspect = W / H;
-    // orb diameter: ~26% of the phone width, ~30% of the 640px column on desktop
-    const diam = r.width < 700 ? 0.26 * W : Math.min(0.30 * 640 * (W / r.width), 0.4 * H);
-    orbFrac = diam / H;                                         // fraction of the viewport height
-    camZ = 1.0 / (Math.tan(FOV / 2) * orbFrac);
-    proj = persp(FOV, aspect, 0.05, 80);
-  }
-  new ResizeObserver(fit).observe(cv); fit();
-
-  // ---- life envelope over one cycle (phase 0→1) ----
-  const ss = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
-  function life(p) {
-    const grow = ss(0.03, 0.42, p);                          // point → full orb
-    const die = 1 - ss(0.74, 0.90, p);                        // collapse
-    const size = Math.pow(grow, 0.6) * die;
-    const birth = Math.exp(-Math.pow((p - 0.07) / 0.06, 2));  // flare at birth
-    const death = Math.exp(-Math.pow((p - 0.86) / 0.05, 2));  // flare at collapse
-    const flare = 0.10 * size + 1.4 * birth + 1.1 * death;
-    const bloom = 0.45 * size + 0.4 * birth;
-    const exposure = ss(0.0, 0.05, p) * (1 - ss(0.90, 0.985, p));  // the orb and its light fade to nothing before rebirth
-    const sky = 0.75 + 0.25 * exposure;                               // the star field stays, dipping a little between lives
-    return { size, flare, bloom, exposure, sky };
-  }
-
-  let visible = false, raf = 0, t0 = performance.now();
-  function frame(now) {
-    raf = 0;
-    const phase = ((now - t0) % LOOP) / LOOP;
-    const L = life(reduced ? 0.55 : phase);
-    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
-    // stars
-    gl.useProgram(starP); gl.bindVertexArray(vaoStars);
-    gl.uniformMatrix4fv(U(starP, 'uProj'), false, proj);
-    gl.uniform1f(U(starP, 'uPhase'), phase); gl.uniform1f(U(starP, 'uDepth'), DEPTH); gl.uniform1f(U(starP, 'uWraps'), WRAPS); gl.uniform1f(U(starP, 'uExposure'), L.sky);
-    gl.uniform1f(U(starP, 'uDpr'), W / cv.getBoundingClientRect().width);
-    gl.uniform1f(U(starP, 'uPts'), 0); gl.drawArrays(gl.LINES, 0, NSTAR * 2);      // streaks
-    gl.uniform1f(U(starP, 'uPts'), 1); gl.drawArrays(gl.POINTS, 0, NSTAR * 2);     // dot heads
-    // orb
-    if (L.size > 0.002) {
-      gl.useProgram(orbP); gl.bindVertexArray(vaoOrb);
-      gl.uniformMatrix4fv(U(orbP, 'uProj'), false, proj); gl.uniformMatrix4fv(U(orbP, 'uView'), false, lookAt(camZ));
-      gl.uniformMatrix4fv(U(orbP, 'uModel'), false, rot(0.35 + 0.1 * Math.sin(phase * Math.PI * 2), phase * Math.PI * 2 * 1.0));
-      gl.uniform3f(U(orbP, 'uCam'), 0, 0, camZ); gl.uniform1f(U(orbP, 'uScale'), L.size);
-      gl.uniform1f(U(orbP, 'uPhase'), phase); gl.uniform1f(U(orbP, 'uExposure'), L.exposure); gl.uniform1f(U(orbP, 'uGlow'), 0.85 + 0.35 * L.flare);
-      gl.drawArrays(gl.TRIANGLES, 0, opos.length / 3);
-    }
-    // flare
-    gl.useProgram(flareP); gl.bindVertexArray(vaoFlare);
-    const fs = orbFrac * (2.2 + 1.2 * L.flare);                  // quad half-height in viewport-height units
-    gl.uniform2f(U(flareP, 'uCentre'), 0, 0); gl.uniform2f(U(flareP, 'uSize'), fs * 2 / aspect, fs * 2);
-    gl.uniform1f(U(flareP, 'uFlare'), L.flare); gl.uniform1f(U(flareP, 'uBloom'), L.bloom); gl.uniform1f(U(flareP, 'uPhase'), phase); gl.uniform1f(U(flareP, 'uExposure'), L.exposure);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    if (visible && !reduced && !document.hidden) raf = requestAnimationFrame(frame);
-  }
-  const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) kick(); }, { threshold: 0.02 }).observe(cv);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && visible) kick(); });
+  const v = document.getElementById('vid');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); v.pause(); return; }
+  const play = () => v.play().catch(() => {});
+  new IntersectionObserver(([e]) => e.isIntersecting ? play() : v.pause(), { threshold: 0.05 }).observe(v);
+  document.addEventListener('visibilitychange', () => document.hidden ? v.pause() : play());
 })();
-</script>
-<script>
-// Portals point at the live domains. When the three sites are hosted together under their folder names
-// (local preview, GitHub Pages, any staging host), use the sibling folders so the links work before DNS exists.
+/* when the three sites are co-hosted under one origin (GitHub Pages test, local preview) the portals link by path */
 if (/\/(sscorp\.io|swiim\.ing|shary\.fyi)\//.test(location.pathname) || location.protocol === 'file:')
   document.querySelectorAll('a[data-local]').forEach(a => a.setAttribute('href', a.dataset.local));
 </script>

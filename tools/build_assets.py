@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Regenerates every optimised web asset for the three sites from the reference
-folder "SSCORP-SWIIM-SHARY WEBSITE".  Requires: pymupdf, pillow, fonttools, brotli.
+Regenerates the optimised web assets for swiim.ing and shary.fyi (plus the SSCORP CV) from the
+reference folder "SSCORP-SWIIM-SHARY WEBSITE".  sscorp.io itself is built by tools/build_sscorp.py.
+Requires: pymupdf, pillow, fonttools, brotli.
 
     PYTHONPATH=<libs> python3 tools/build_assets.py
 """
@@ -84,10 +85,6 @@ def pdf_image(doc, xref):
 
 def images():
     print('images')
-    # SSCORP portrait (embedded in the .ai file)
-    d = pymupdf.open(find('SSCORPio Layout*.ai'))
-    xref = d[0].get_image_info(xrefs=True)[0]['xref']
-    save_img(pdf_image(d, xref), os.path.join(SSCORP, 'img', 'portrait'), [984], quality=84)
     # SWIIM past-work photos
     photos = sorted(glob.glob(os.path.join(REF, '2. SWIIM.ing', '*Past Work*', '*')))
     manifest = []
@@ -177,101 +174,6 @@ def svgs():
     svg = re.sub(r'(\d+\.\d)\d+', r'\1', svg)
     p = out(SHARY, 'svg', 'swimdom-xp-lockup.svg'); open(p, 'w').write(svg); print('   swimdom-xp-lockup.svg', kb(p), 'box', (round(x0), round(y0), round(x1), round(y1)))
 
-# ---------------------------------------------------------------- SSCORP lettering
-def path_d(dr, dx, dy):
-    """Rebuild an SVG path 'd' from a PyMuPDF drawing, translated by (dx,dy)."""
-    parts = []; cur = None
-    def P(p): return f'{p.x+dx:.1f} {p.y+dy:.1f}'
-    for it in dr['items']:
-        k = it[0]
-        if k == 're':
-            r = it[1]; parts.append(f'M{P(r.tl)}L{P(r.tr)}L{P(r.br)}L{P(r.bl)}Z'); cur = None; continue
-        if k == 'qu':
-            q = it[1]; parts.append(f'M{P(q.ul)}L{P(q.ur)}L{P(q.lr)}L{P(q.ll)}Z'); cur = None; continue
-        start = it[1]
-        if cur is None or abs(cur.x - start.x) > 0.05 or abs(cur.y - start.y) > 0.05:
-            parts.append('M' + P(start))
-        if k == 'l':
-            parts.append('L' + P(it[2])); cur = it[2]
-        elif k == 'c':
-            parts.append(f'C{P(it[2])} {P(it[3])} {P(it[4])}'); cur = it[4]
-    if dr.get('closePath'): parts.append('Z')
-    return ''.join(parts)
-
-def hexc(c): return '#%02x%02x%02x' % tuple(int(round(v * 255)) for v in c[:3])
-
-def cluster(drs, gap):
-    """Group drawings whose rects are within `gap` of each other (same colour)."""
-    groups = []
-    for dr in drs:
-        r = pymupdf.Rect(dr['rect'])
-        merged = None
-        for g in groups:
-            if g['color'] != dr['color']: continue
-            gr = g['rect']
-            if r.x0 < gr.x1 + gap and r.x1 > gr.x0 - gap and r.y0 < gr.y1 + gap and r.y1 > gr.y0 - gap:
-                if merged is None:
-                    g['items'].append(dr); g['rect'] = gr | r; merged = g
-                else:
-                    merged['items'] += g['items']; merged['rect'] |= g['rect']; g['dead'] = True
-        if merged is None:
-            groups.append({'color': dr['color'], 'rect': r, 'items': [dr]})
-        groups = [g for g in groups if not g.get('dead')]
-    return groups
-
-# screen 1179x2396 artboards; each drawing is assigned by (colour, centre-y) → group id
-EXPECT = {
-    0: [('#93f9e5', 150, 600, 'sharon-shum'), ('#000000', 150, 600, 'sharon-shum'), ('#f1d9ff', 1050, 1420, 'creative-ops'),
-        ('#f1d9ff', 1420, 1760, 'renegade'), ('#93f9e5', 1700, 2360, 'is-online')],
-    1: [('#f1d9ff', 0, 500, 'someone'), ('#daf794', 1500, 2000, 'cv-download')],
-    2: [('#93f9e5', 80, 260, 'ss'), ('#f1d9ff', 260, 480, 'creative-ops'), ('#daf794', 420, 720, 'swiim-ing'),
-        ('#f1d9ff', 720, 990, 'renegade'), ('#daf794', 880, 1120, 'shary-fyi'), ('#93f9e5', 1100, 1480, 'is-online'),
-        ('#f1d9ff', 1500, 1700, 'contact'), ('#93f9e5', 1650, 1850, 'me-at-sscorp'), ('#61ffe1', 1650, 2300, 'me-at-sscorp')],
-}
-
-def lettering():
-    print('sscorp lettering')
-    d = pymupdf.open(find('SSCORPio Layout*.ai'))
-    result = {}
-    for pi, page in enumerate(d):
-        board = [x for x in page.get_drawings() if x.get('fill') and x['rect'].width > 1000][0]['rect']
-        dx, dy = -board.x0, -board.y0
-        named = {}
-        for dr in page.get_drawings():
-            if not dr.get('fill') or dr['rect'].width > 1000: continue
-            r = pymupdf.Rect(dr['rect']) + (dx, dy, dx, dy)
-            if r.width < 2 and r.height < 2: continue          # stray 1px dots in the source file
-            col = hexc(dr['fill']); cy = (r.y0 + r.y1) / 2
-            hit = [e for e in EXPECT[pi] if e[0] == col and e[1] <= cy <= e[2]]
-            key = hit[0][3] if hit else f'unnamed-{col}-{int(r.y0)}'
-            path = f'<path fill="{col}" d="{path_d(dr, dx, dy)}"{" fill-rule=\"evenodd\"" if dr.get("even_odd") else ""}/>'
-            g = named.setdefault(key, {'svg': '', 'rect': r, 'colors': {}, 'n': 0})
-            g['svg'] += path; g['rect'] = g['rect'] | r; g['n'] += 1; g['colors'][col] = g['colors'].get(col, 0) + 1
-        for k, v in named.items():
-            r = v['rect']; v['rect'] = [round(r.x0), round(r.y0), round(r.x1), round(r.y1)]
-            v['color'] = max(v['colors'], key=v['colors'].get)
-            print(f'   page{pi} {k:16s} {v["colors"]} n={v["n"]:3d} box={v["rect"]}')
-        result[pi] = {'board': [round(board.width), round(board.height)], 'groups': named}
-        if pi == 0:
-            info = page.get_image_info()[0]['bbox']
-            result[pi]['image'] = [round(info[0] + dx, 1), round(info[1] + dy, 1), round(info[2] + dx, 1), round(info[3] + dy, 1)]
-        if pi == 1:
-            lines = []
-            for b in page.get_text('dict')['blocks']:
-                for l in b.get('lines', []):
-                    for s in l['spans']:
-                        if s['text'].strip():
-                            bb = s['bbox']; lines.append({'y': round(bb[1] + dy), 'x': round(bb[0] + dx), 'size': s['size'], 'text': s['text']})
-            result[pi]['text'] = lines
-        # debug render of every group
-        for k, v in named.items():
-            r = v['rect']
-            svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{r[0]-10} {r[1]-10} {r[2]-r[0]+20} {r[3]-r[1]+20}"><rect x="{r[0]-10}" y="{r[1]-10}" width="{r[2]-r[0]+20}" height="{r[3]-r[1]+20}" fill="#222"/><g fill="{v["color"]}">{v["svg"]}</g></svg>'
-            dd = pymupdf.open(stream=svg.encode(), filetype='svg'); pix = dd[0].get_pixmap(matrix=pymupdf.Matrix(0.5, 0.5))
-            pix.save(out(SCRATCH, 'debug', f'p{pi}-{k}.png'))
-    p = out(SCRATCH, 'sscorp_lettering.json'); json.dump(result, open(p, 'w')); print('  ->', p)
-    return result
-
 # ---------------------------------------------------------------- files
 def files():
     print('files')
@@ -280,5 +182,5 @@ def files():
     dst = out(SSCORP, 'files', 'Sharon-Shum-CV.pdf'); shutil.copy(src, dst); print('  ', os.path.basename(dst), kb(dst))
 
 if __name__ == '__main__':
-    steps = sys.argv[2:] or ['fonts', 'images', 'svgs', 'lettering', 'files']
+    steps = sys.argv[2:] or ['fonts', 'images', 'svgs', 'files']
     for s in steps: globals()[s]()

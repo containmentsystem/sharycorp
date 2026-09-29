@@ -3,3 +3,5 @@ tools/_build/
 .pylib/
 # the 1.2 GB client reference package stays local — never pushed
 SSCORP-SWIIM-SHARY WEBSITE/
+Assets – Updated/
+__pycache__/

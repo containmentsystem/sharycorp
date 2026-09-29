@@ -1,12 +1,14 @@
 # SSCORP.io · SWIIM.ing · SHARY.fyi
 
-Three mobile-first static sites built from the reference package in `SSCORP-SWIIM-SHARY WEBSITE/`
-(layout `.ai`/`.pdf` files, the copy `.docx`, fonts, logos, photos). No framework, no build step at
+Three mobile-first static sites built from the client packages `SSCORP-SWIIM-SHARY WEBSITE/`
+(swiim.ing / shary.fyi: layout `.ai`/`.pdf` files, the copy `.docx`, fonts, logos, photos) and
+`Assets – Updated/` (sscorp.io: `reference.png`, the four `SSCORP Layout – Mobile_Text *.svg` lettering
+files, the portrait loop `.mp4`, PF Pixelscript Pro and Syne Mono). No framework, no build step at
 deploy time — each folder is self-contained and deploys to its own domain.
 
 | Folder       | Domain      | What it is |
 |--------------|-------------|------------|
-| `sscorp.io/` | sscorp.io   | 3-screen scroller. All handwritten lettering is vector, extracted from `SSCORPio Layout – Mobile.ai`. |
+| `sscorp.io/` | sscorp.io   | Three phone tiles (portrait loop · bio · portals) from `Assets – Updated/reference.png`; stacked with scroll-snap on phones, side by side from 900 px. Lettering is the delivered SVG vectors; `swiim.ing`, `shary.fyi`, `contact` and `&` are live text in PF Pixelscript Pro. |
 | `swiim.ing/` | swiim.ing   | Splash → home → About / Values / Clients / Services / Contact (hash routes `#about` …). |
 | `shary.fyi/` | shary.fyi   | "Swimdom XP" desktop: boot screen, icons, windows (My Bio, Output, System, SWM Messenger, Swimnet Explorer), CV/Portfolio dialog, start bar. |
 | `index.html` | —           | Redirects to `sscorp.io/`, the hub. Its handwritten SWIIM.ING / SHARY×FYI lettering links to the other two sites (live domains in production, sibling folders when previewed locally). |
@@ -21,16 +23,24 @@ then open <http://127.0.0.1:8788/> (lands on sscorp.io, the hub).
 
 ## Regenerating assets
 
-`tools/build_assets.py` rebuilds every optimised asset from the reference folder:
-WOFF2 font subsets, WebP + JPEG photo renditions (1600 / 800 px), backgrounds, the 3D avatar,
-metadata-stripped SVGs, the outlined Swimdom XP lockup, and the SSCORP lettering JSON.
-`tools/assemble.py` injects that lettering into `tools/templates/sscorp.html` → `sscorp.io/index.html`.
-`swiim.ing/index.html` is generated from `tools/templates/swiim.html` + `swiim.ing/img/work/manifest.json`.
+`tools/build_sscorp.py` builds sscorp.io from `Assets – Updated/`: subsets the two fonts to WOFF2, re-encodes the
+portrait loop (720×1280 H.264 + VP9, ~1 MB / 0.6 MB, plus a WebP poster) and inlines the lettering SVGs into
+`tools/templates/sscorp.html` → `sscorp.io/index.html` (edit the template, not the output). Needs `ffmpeg` on PATH
+for the video step; `html` alone is fast:
 
 ```bash
 python3 -m pip install --target .pylib pymupdf pillow fonttools brotli
+PYTHONPATH=.pylib python3 tools/build_sscorp.py            # fonts video html
+PYTHONPATH=.pylib python3 tools/build_sscorp.py html       # template change only
+```
+
+`tools/build_assets.py` rebuilds the swiim.ing / shary.fyi assets from `SSCORP-SWIIM-SHARY WEBSITE/`:
+WOFF2 font subsets, WebP + JPEG photo renditions (1600 / 800 px), backgrounds, the 3D avatar,
+metadata-stripped SVGs, the outlined Swimdom XP lockup, and copies the SSCORP CV.
+`swiim.ing/index.html` is generated from `tools/templates/swiim.html` + `swiim.ing/img/work/manifest.json`.
+
+```bash
 PYTHONPATH=.pylib python3 tools/build_assets.py /tmp/shary-build
-PYTHONPATH=.pylib python3 tools/assemble.py /tmp/shary-build/sscorp_lettering.json
 ```
 
 ## Things to edit later (all plain text in the HTML)
@@ -41,15 +51,16 @@ PYTHONPATH=.pylib python3 tools/assemble.py /tmp/shary-build/sscorp_lettering.js
 * **Downloads** — `shary.fyi/files/Sharyfairy-Artist-CV.pdf` and `Sharyfairy-Portfolio.pdf` are not in the package yet
   (paths set in `DOWNLOADS`). `sscorp.io/files/Sharon-Shum-CV.pdf` is the résumé from `ARCHIVE/Website/File Links/`.
 * **Announcements note** — the yellow sticky in `shary.fyi/index.html`. Set in VG Aldiviva Primavera (light lines) and Estate (bold lines), taken from the *trial* fonts in `ARCHIVE/Fonts/_SHARON_SHARYFAIRY FONTS.zip` — check licensing before launch.
-* **Email links** — `me@sscorp.io` (SSCORP "ME @ SSCORP.IO"), `ss@swiim.ing`, `fairy@shary.fyi`.
+* **Email links** — `me@sscorp.io` (SSCORP "me@SScorp.iO"), `ss@swiim.ing`, `fairy@shary.fyi`.
+* **SSCORP bio copy** — the five `<p>`s in `tools/templates/sscorp.html` (transcribed from `reference.png`), then `tools/build_sscorp.py html`.
 
 ## Test deployment on GitHub Pages (one domain)
 
 Push the repo and enable Pages for the `main` branch (root). The site comes up at `https://<user>.github.io/<repo>/`:
 the root `index.html` redirects to `sscorp.io/`, and the handwritten portals / Swimnet Explorer links resolve to the
 sibling folders (`swiim.ing/`, `shary.fyi/`) automatically whenever the sites are served from their folder names.
-`.nojekyll` keeps GitHub from running Jekyll over the files. The 1.2 GB reference package is git-ignored and never pushed
-(the push is ~15 MB).
+`.nojekyll` keeps GitHub from running Jekyll over the files. Both client packages are git-ignored and never pushed
+(the push is ~17 MB).
 
 ## Launch checklist (real domains)
 
@@ -64,4 +75,6 @@ Only the three site folders are needed — not `SSCORP-SWIIM-SHARY WEBSITE/`, `t
 * Confirm `me@sscorp.io`, `ss@swiim.ing` and `fairy@shary.fyi` mailboxes exist.
 * VG Aldiviva on shary.fyi is a *trial* font from the archive zip — check the licence before going live.
 * Serve with gzip/brotli (SVG and HTML compress ~4×) and long cache headers for `/img`, `/svg`, `/fonts`.
-* WebGL2 is required for the sscorp.io hero object; browsers without it simply see the page without it.
+* The sscorp.io portrait loop is cut from `180924_new matrix_01 – working file not final export.mp4`. When the final
+  export arrives, drop it in `Assets – Updated/` and run `tools/build_sscorp.py video` — nothing else changes.
+* sscorp.io: the loop pauses off-screen and stays on its poster frame under `prefers-reduced-motion`.
